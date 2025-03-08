@@ -19,27 +19,27 @@ export default function ChooseMenu(props) {
   const menuItems = [
     {
       title: "MAP",
-      image: "/images/map.png",
+      image: "./images/map.png",
       route: "/choose/map",
     },
     {
       title: "E-PHARMACY",
-      image: "/images/appointment.png",
+      image: "./images/appointment.png",
       route: "/choose/pharmacy",
     },
     {
       title: "HEALTH PROFESSIONALS",
-      image: "/images/medical-team.png",
+      image: "./images/medical-team.png",
       route: "/choose/healthprofessionals",
     },
     {
       title: "APPOINTMENT",
-      image: "/images/medical-appointment.png",
+      image: "./images/medical-appointment.png",
       route: "/choose/appointment",
     },
     {
       title: "E-PAYMENT",
-      image: "/images/credit-card.png",
+      image: "./images/credit-card.png",
       route: "/choose/epayment",
     },
   ];

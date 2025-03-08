@@ -62,7 +62,7 @@ export default function PharmacyPage() {
       description: "Pain reliever and fever reducer. Used to treat mild to moderate pain, and also to reduce fever.",
       price: 10,
       count: 100,
-      img: "../images/aspirin.png",
+      img: "./images/aspirin.png",
     },
     {
       id: 1,
@@ -70,7 +70,7 @@ export default function PharmacyPage() {
       description: "Nonsteroidal anti-inflammatory drug (NSAID) used to relieve pain, reduce inflammation, and reduce fever.",
       price: 15.0,
       count: 7,
-      img: "../images/ibuprofen.png",
+      img: "./images/ibuprofen.png",
     },
     {
       id: 2,
@@ -78,7 +78,7 @@ export default function PharmacyPage() {
       description: "Pain reliever and fever reducer that works by elevating the pain threshold and reducing fever through action on the heat-regulating center.",
       price: 10.0,
       count: 11,
-      img: "../images/biogesic.png",
+      img: "./images/biogesic.png",
     },
     {
       id: 3,
@@ -86,7 +86,7 @@ export default function PharmacyPage() {
       description: "Antihistamine that reduces the effects of natural chemical histamine in the body. Used to treat sneezing, runny nose, and itchy or watery eyes.",
       price: 20.99,
       count: 13,
-      img: "../images/claritin.png",
+      img: "./images/claritin.png",
     },
     {
       id: 4,
@@ -94,7 +94,7 @@ export default function PharmacyPage() {
       description: "Proton pump inhibitor that decreases the amount of acid produced in the stomach. Used to treat symptoms of gastroesophageal reflux disease.",
       price: 25.99,
       count: 16,
-      img: "../images/omeprazole.png",
+      img: "./images/omeprazole.png",
     },
     {
       id: 5,

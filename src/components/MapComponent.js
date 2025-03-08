@@ -16,7 +16,6 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 import "leaflet-providers";
 import "leaflet-routing-machine";
-import icon from "./marker-icon.png";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
 import "./Map.css";
 
@@ -38,7 +37,7 @@ const MapComponent = () => {
       lat: 14.952523615488879,
       lng: 120.75991397365726,
       address: "2468 St. John St. Villena Subd. 2, Apalit, 2016 Pampanga",
-      image: "../images/merian.png",
+      image: "./images/merian.png",
       description: "Description",
       patients: getRandomNumber(0, 100),
       rooms: getRandomNumber(0, 15),
@@ -51,7 +50,7 @@ const MapComponent = () => {
       lat: 14.95254913946995,
       lng: 120.7638930942128,
       address: "Gonzales Ave, Apalit, 2016 Pampanga",
-      image: "../images/apalit-doctors-hospital.jpg",
+      image: "./images/apalit-doctors-hospital.jpg",
       description: "Description",
       patients: getRandomNumber(10, 100),
       rooms: getRandomNumber(0, 15),
@@ -64,7 +63,7 @@ const MapComponent = () => {
       lat: 15.04413615531548,
       lng: 120.68584423557277,
       address: "San Fernando Interchange, San Fernando, 2000 Pampanga",
-      image: "../images/greencity.png",
+      image: "./images/greencity.png",
       description: "Description",
       patients: getRandomNumber(10, 100),
       rooms: getRandomNumber(0, 15),
@@ -77,7 +76,7 @@ const MapComponent = () => {
       lat: 14.96027668509019,
       lng: 120.75936527120034,
       address: "Apalit, Pampanga",
-      image: "../images/premier.png",
+      image: "./images/premier.png",
       description: "Description",
       patients: getRandomNumber(10, 100),
       rooms: getRandomNumber(1, 15),
@@ -90,7 +89,7 @@ const MapComponent = () => {
       lat: 15.0346621713219,
       lng: 120.68466824622196,
       address: "San Fernando, Pampanga",
-      image: "../images/jbl.png",
+      image: "./images/jbl.png",
       description: "Description",
       patients: getRandomNumber(10, 100),
       rooms: getRandomNumber(0, 15),
@@ -183,11 +182,19 @@ const MapComponent = () => {
 
       // HOSPITAL ICON
       const hospitalIcon = L.icon({
-        iconUrl: "../images/hospital.png",
+        iconUrl: "./images/hospital.png",
         iconSize: [35, 35],
         iconAnchor: [35, 20],
         popupAnchor: [-15, -40],
       });
+
+      const markerIcon = L.icon({
+        iconUrl: "./images/marker-icon.png",
+        iconSize: [35, 35],
+        iconAnchor: [35, 20],
+        popupAnchor: [-15, -40],
+      });
+
 
       // TRAFFIC ICONS
       const trafficHighIcon = L.divIcon({
@@ -212,7 +219,7 @@ const MapComponent = () => {
       });
 
       let DefaultIcon = L.icon({
-        iconUrl: icon,
+        iconUrl: markerIcon,
         shadowUrl: iconShadow,
         iconSize: [41, 41],
         shadowSize: [41, 41],

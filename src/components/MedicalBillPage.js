@@ -491,7 +491,7 @@ const BillPage = () => {
                     }}
                   >
                     <img
-                      src="../images/gcash.png"
+                      src="./images/gcash.png"
                       alt="GCash"
                       style={{ height: "24px", marginRight: "8px" }}
                     />
@@ -603,7 +603,7 @@ const BillPage = () => {
                                 }}
                               >
                                 <img
-                                  src="../images/gcash.png"
+                                  src="./images/gcash.png"
                                   alt="GCash"
                                   style={{ height: "24px" }}
                                 />
@@ -1149,7 +1149,7 @@ const BillPage = () => {
               }}
             >
               <img
-                src="../images/gcash.png"
+                src="./images/gcash.png"
                 alt="GCash"
                 style={{ height: "24px", marginRight: "12px" }}
               />

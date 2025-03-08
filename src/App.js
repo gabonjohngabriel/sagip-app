@@ -3,7 +3,7 @@ import { Container, CssBaseline, Paper } from "@mui/material";
 import HomeScreen from "./components/Menu"; // Import the HomeScreen component
 import ChooseMenu from "./components/ChooseMenu"; // Import the ChooseMenu component
 import MapPage from "./components/MapPage"; // Import the ChooseMap component
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HashRouter, BrowserRouter, Routes, Route } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material/styles"; // For Material-UI v5
 import PharmacyPage from "./components/PharmacyPage";
 import DoctorsPage from "./components/DoctorsPage";
@@ -50,7 +50,7 @@ clearInterval(interval);
 
 function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <Container maxWidth="sm">
@@ -85,7 +85,7 @@ function App() {
           </Paper>
         </Container>
       </ThemeProvider>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
