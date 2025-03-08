@@ -188,14 +188,6 @@ const MapComponent = () => {
         popupAnchor: [-15, -40],
       });
 
-      const markerIcon = L.icon({
-        iconUrl: "./images/marker-icon.png",
-        iconSize: [35, 35],
-        iconAnchor: [35, 20],
-        popupAnchor: [-15, -40],
-      });
-
-
       // TRAFFIC ICONS
       const trafficHighIcon = L.divIcon({
         className: "traffic-icon-high",
@@ -219,7 +211,7 @@ const MapComponent = () => {
       });
 
       let DefaultIcon = L.icon({
-        iconUrl: markerIcon,
+        iconUrl: "./images/marker-icon.png",
         shadowUrl: iconShadow,
         iconSize: [41, 41],
         shadowSize: [41, 41],
