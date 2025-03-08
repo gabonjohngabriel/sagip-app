@@ -1,0 +1,89 @@
+/* MAP */
+#map {
+  max-height: 300px !important;
+  min-width: 750px !important;
+  margin-top: 20px !important;
+  z-index: 1;
+}
+
+/* POPUP */
+.popup-image {
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 10px;
+}
+
+.popup-content {
+  text-align: center;
+  position: relative;
+}
+
+/* BUTTONS */
+.info-button {
+  background-color: #00ba5d;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.info-button:hover {
+  background-color: #009e4f;
+}
+
+.info-button.active {
+  background-color: #ff4444;
+}
+
+.info-button.active2 {
+  background-color: #009e4f;
+}
+
+.info-section {
+  margin-top: 10px;
+  display: none;
+}
+
+.emergency-button {
+  background-color: #ff4444;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 24px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+}
+
+.emergency-button:hover {
+  background-color: #cc0000;
+}
+
+.exit-button {
+  background-color: #ff6e6e;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.exit-button:hover {
+  background-color: #ff7f7f;
+}
+
+/* ROUTING CONTAINER */
+.leaflet-routing-container .leaflet-bar {
+  background: linear-gradient(135deg, #006421, #60836a);
+  border-radius: 10px;
+  box-shadow: 0 5px 8px rgba(0, 0, 0, 0.3);
+  color: white;
+}
