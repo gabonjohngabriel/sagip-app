@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/sagip-app/static/css/main.7e17b774.css",
+    "main.css": "/sagip-app/static/css/main.7f31ef16.css",
     "main.js": "/sagip-app/static/js/main.1fea5f02.js",
     "static/js/488.82ff4aaa.chunk.js": "/sagip-app/static/js/488.82ff4aaa.chunk.js",
     "index.html": "/sagip-app/index.html",
-    "main.7e17b774.css.map": "/sagip-app/static/css/main.7e17b774.css.map",
+    "main.7f31ef16.css.map": "/sagip-app/static/css/main.7f31ef16.css.map",
     "main.1fea5f02.js.map": "/sagip-app/static/js/main.1fea5f02.js.map",
     "488.82ff4aaa.chunk.js.map": "/sagip-app/static/js/488.82ff4aaa.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.7e17b774.css",
+    "static/css/main.7f31ef16.css",
     "static/js/main.1fea5f02.js"
   ]
 }
