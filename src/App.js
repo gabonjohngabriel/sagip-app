@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from 'react';
 import { Container, CssBaseline, Paper } from "@mui/material";
 import HomeScreen from "./components/Menu"; // Import the HomeScreen component
 import ChooseMenu from "./components/ChooseMenu"; // Import the ChooseMenu component
@@ -10,8 +10,12 @@ import DoctorsPage from "./components/DoctorsPage";
 import AppointmentPage from "./components/AppointmentPage";
 import BillPage from "./components/MedicalBillPage";
 import PaymentSelectionDialog from "./components/PaymentPage";
+import LoginPage from "./components/LoginPage";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
+import SignupPage from './components/SignupPage';
+import Dashboard from './components/Dashboard';
+import SagipLogoAnimation from './components/SagipLogoAnimation';
 
 const theme = createTheme({
   typography: {
@@ -49,6 +53,34 @@ const interval = setInterval(() => {
 clearInterval(interval);
 
 function App() {
+  const [showAnimation, setShowAnimation] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  useEffect(() => {
+    // CHECK IF USER IS ALREADY AUTHENTICATED
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      setIsAuthenticated(true);
+    }
+  }, []);
+
+  const handleAnimationComplete = () => {
+    setShowAnimation(false);
+  };
+
+  const handleLogin = (token) => {
+    localStorage.setItem('authToken', token);
+    setIsAuthenticated(true);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('authToken');
+    setIsAuthenticated(false);
+  };
+
+  if (showAnimation) {
+    return <SagipLogoAnimation onAnimationComplete={handleAnimationComplete} />;
+  }
+
   return (
     <HashRouter>
       <ThemeProvider theme={theme}>
@@ -80,6 +112,14 @@ function App() {
               <Route
                 path="/choose/epayment"
                 element={<BillPage />}
+              />
+                <Route
+                path="/choose/login"
+                element={<LoginPage />}
+              />
+                <Route
+                path="/choose/signup"
+                element={<SignupPage />}
               />
             </Routes>
           </Paper>

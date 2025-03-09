@@ -91,7 +91,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#136e2c !important",
   },
   white: {
-    color: "#ffffff",
+    color: "#ffffff !important",
   },
   whitebg: {
     backgroundColor: "#ffffff !important",
@@ -110,10 +110,17 @@ const useStyles = makeStyles((theme) => ({
     boxSizing: "border-box",
     overflow: "hidden",
   },
+  noUnderline: {
+  textDecoration: "none"
+  },
   // CARDS
   card: {
     margin: "4px",
     opacity: "1",
+    "&:hover $cardhover:not(:hover)": {
+      filter: "blur(2px)",
+      opacity: 0.1,
+    },
   },
   cardhover: {
     "&:hover": {
@@ -144,10 +151,6 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   cardsContainer: {
-    "&:hover $card:not(:hover)": {
-      filter: "blur(2px)",
-      opacity: 0.1,
-    },
     maxHeight: "1000px",
     overflowY: "auto",
     scrollBehavior: "smooth",

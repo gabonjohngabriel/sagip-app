@@ -143,6 +143,10 @@ const PaymentForm = ({
     }
   };
 
+  const calculateTotal = () => {
+    return cart.reduce((sum, item) => sum + item.price, 50).toFixed(2);
+  };
+
   const totalAmount = cart
     .reduce((sum, item) => sum + item.price, 0)
     .toFixed(2);
@@ -406,7 +410,7 @@ const PaymentForm = ({
               variant="body1"
               className={`${styles.poppins} ${styles.bold}`}
             >
-              ₱0.00
+              ₱50.00
             </Typography>
           </Box>
           <Divider sx={{ my: 2 }} />
@@ -422,15 +426,15 @@ const PaymentForm = ({
               className={`${styles.poppins} ${styles.bold}`}
               color="#208a3c"
             >
-              ₱{totalAmount}
+              ₱{calculateTotal()}
             </Typography>
           </Box>
         </Box>
       </DialogContent>
       <DialogActions sx={{ justifyContent: "space-between", px: 3, py: 2 }}>
         <Button
-          variant="outlined"
-          className={`${styles.poppins}`}
+          variant="contained"
+          className={`${styles.green} ${styles.cardhover} ${styles.poppins}`}
           onClick={onClose}
           disabled={loading}
         >
@@ -443,7 +447,7 @@ const PaymentForm = ({
           disabled={loading}
           startIcon={loading && <CircularProgress size={20} color="inherit" />}
         >
-          {loading ? "Processing..." : paymentMethod === "card" ? "Proceed to Payment" : `Pay ₱${totalAmount}`}
+          {loading ? "Processing..." : paymentMethod === "card" ? "Proceed to Payment" : `Pay ₱${calculateTotal()}`}
         </Button>
       </DialogActions>
     </>

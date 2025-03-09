@@ -102,7 +102,7 @@ export default function PharmacyPage() {
       description: "Oral diabetes medicine that helps control blood sugar levels. Used to treat type 2 diabetes.",
       price: 29.0,
       count: 4,
-      img: "https://cdn.shopify.com/s/files/1/0340/2849/products/MedGreyPockets_front_grande400x600_grande_888f95c1-0f4d-483f-938e-c686892a855a_grande.jpg?v=1454966549",
+      img: "./images/metformin.png",
     },
     {
       id: 6,
@@ -110,7 +110,7 @@ export default function PharmacyPage() {
       description: "ACE inhibitor that helps relax blood vessels. Used to treat high blood pressure and heart failure.",
       price: 33.95,
       count: 18,
-      img: "https://cdn.shopify.com/s/files/1/0340/2849/products/Gloves_grande.jpg?v=1446586810",
+      img: "./images/lisinopril.png",
     },
     {
       id: 7,
@@ -118,7 +118,7 @@ export default function PharmacyPage() {
       description: "Statin medication that lowers the level of cholesterol in the blood. Used to reduce the amount of fatty substances in the blood.",
       price: 15.0,
       count: 15,
-      img: "https://cdn.shopify.com/s/files/1/0340/2849/products/TC2017_Hat_Snapback_BlackWhite_grande.jpg?v=1485538793",
+      img: "./images/simvastatin.jpg",
     },
     {
       id: 8,
@@ -126,7 +126,7 @@ export default function PharmacyPage() {
       description: "Calcium channel blocker that widens blood vessels and improves blood flow. Used to treat high blood pressure and chest pain.",
       price: 14.0,
       count: 19,
-      img: "https://cdn.shopify.com/s/files/1/0340/2849/products/Disc_VC_OG_grande_grande_cc0c1695-4247-426a-bd6c-5821da4e42da_grande.png?v=1485469652",
+      img: "./images/amlodipine.png",
     },
   ];
 

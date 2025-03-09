@@ -193,59 +193,103 @@ const ChatWindow = ({ doctor, onClose, onMinimize }) => {
       setMessages(withResponse);
       saveChatMessages(doctor.id, withResponse);
     }, 1000 + Math.random() * 1000);
-  };
-
-  // GENERATE MESSAGE FOR BOT
-  const getAutomaticResponse = (doctor, msg) => {
-    const msgLower = msg.toLowerCase();
-
-    if (
-      msgLower.includes("appointment") ||
-      msgLower.includes("schedule") ||
-      msgLower.includes("book")
-    ) {
-      return `I'd be happy to help you schedule an appointment. I'm available on ${doctor.availability.join(
-        ", "
-      )}. Would any of those days work for you?`;
-    } else if (
-      msgLower.includes("hello") ||
-      msgLower.includes("hi") ||
-      msgLower.includes("hey")
-    ) {
-      return `Hello! How can I assist you today?`;
-    } else if (msgLower.includes("thank") || msgLower.includes("thanks")) {
-      return "You're welcome! Is there anything else I can help you with?";
-    } else if (
-      msgLower.includes("symptom") ||
-      msgLower.includes("pain") ||
-      msgLower.includes("feel")
-    ) {
-      return `I understand you're not feeling well. As a ${doctor.specialty} specialist, I'd like to learn more about your symptoms. However, for a proper diagnosis, we'll need an appointment. Would you like to schedule one?`;
-    } else if (
-      msgLower.includes("cost") ||
-      msgLower.includes("fee") ||
-      msgLower.includes("price")
-    ) {
-      return "Our consultation fees depend on the type of visit. For initial consultations, it's typically around ₱500-800. Would you like more information?";
-    } else if (msgLower.includes("cancel")) {
-      return "I understand you need to cancel or reschedule. Please provide your preferred date and time, and I'll check my availability.";
-    } else if (
-      msgLower.includes("location") ||
-      msgLower.includes("address") ||
-      msgLower.includes("clinic")
-    ) {
-      return "My clinic is located at SAGIP Medical Center, San Simon, Pampanga. We're open from 8:00 AM to 5:00 PM on my available days.";
-    } else if (
-      msgLower.includes("inamo") ||
-      msgLower.includes("gago") ||
-      msgLower.includes("ina mo")
-    ) {
-      return "Kumikinanginamo rin.";
-    } else {
-      return "Thank you for your message. To better assist you, would you like to book an appointment or do you have specific questions about my services?";
-    }
-  };
-
+    
+    // GENERATE MESSAGE FOR BOT
+    const getAutomaticResponse = (doctor, msg) => {
+      const msgLower = String(msg || "").toLowerCase();
+    
+      // DESC
+      const extractLocation = (description) => {
+        const fromIndex = description.toLowerCase().indexOf("from ");
+        return fromIndex !== -1 ? description.substring(fromIndex + 5).trim() : "our clinic";
+      };
+    
+      const doctorLocation = extractLocation(doctor.description);
+    
+      const responses = {
+        appointment: [
+          `I'd be happy to help you schedule an appointment. I'm available on ${doctor.availability.join(", ")}. Would any of those days work for you?`,
+          `Sure! My available days are ${doctor.availability.join(", ")}. Let me know what works best for you.`,
+          `Let's get you scheduled! I’m available on ${doctor.availability.join(", ")}. Which day would you prefer?`,
+        ],
+        greeting: [
+          "Hello! How can I assist you today?",
+          "Hi there! What can I do for you?",
+          "Hey! Let me know how I can help.",
+        ],
+        thanks: [
+          "You're welcome! Is there anything else I can help you with?",
+          "No problem! Feel free to ask me anything.",
+          "Glad I could help! Let me know if you need more assistance.",
+        ],
+        symptom: [
+          `I understand you're not feeling well. As a ${doctor.specialty} specialist, I'd like to learn more about your symptoms. However, for a proper diagnosis, we'll need an appointment. Would you like to schedule one?`,
+          `I’m here to help! If you're experiencing discomfort, a consultation would be the best step. Would you like to book one?`,
+          `Your health is important! If you have symptoms, I recommend scheduling an appointment for a proper check-up.`,
+        ],
+        cost: [
+          "Our consultation fees depend on the type of visit. For initial consultations, it's typically around ₱500-800. Would you like more information?",
+          "The consultation fee varies depending on the service. Generally, it ranges from ₱500-800. Let me know if you’d like to proceed.",
+          "Consultation fees are typically between ₱500-800. Would you like to schedule an appointment?",
+        ],
+        cancel: [
+          "I understand you need to cancel or reschedule. Please provide your preferred date and time, and I'll check my availability.",
+          "Need to reschedule? Just let me know your preferred date and time, and I'll adjust accordingly.",
+          "I can assist you with rescheduling. Let me know a new date and time that works for you.",
+        ],
+        location: [
+          `My clinic is located in ${doctorLocation}. Let me know if you need directions!`,
+          `I am based in ${doctorLocation}. Feel free to visit me on my available days.`,
+          `You can find me at ${doctorLocation}. Let me know if you'd like to book an appointment.`,
+        ],
+        circumcision: [
+          "When and where would you like to avail of our circumcision service? Let us know your preferred schedule and location so we can assist you accordingly!",
+          "Looking to avail our circumcision service? Let me know your preferred date and location, and I'll help you book an appointment.",
+          "We offer safe and professional circumcision services. When would you like to schedule your appointment?",
+        ],
+        inappropriate: [
+          "Let's keep our conversation professional and respectful.",
+          "I'm here to assist with medical inquiries. Please keep our discussion appropriate.",
+          "I aim to provide helpful and professional responses. Let’s keep it respectful.",
+          "Tanginamo."
+        ],
+        default: [
+          "Thank you for your message. To better assist you, would you like to book an appointment or do you have specific questions about my services?",
+          "How can I assist you today? Feel free to ask about my services or book an appointment.",
+          "I'm here to help! Let me know if you’d like to schedule a consultation or need medical advice.",
+        ],
+      };
+    
+      // RANDOMIZER FUNCTION
+      const getRandomResponse = (category) => {
+        const options = responses[category];
+        return options[Math.floor(Math.random() * options.length)];
+      };
+    
+      // RESPONSE LOGIC
+      if (msgLower.includes("appointment") || msgLower.includes("schedule") || msgLower.includes("book")) {
+        return getRandomResponse("appointment");
+      } else if (msgLower.includes("hello") || msgLower.includes("hi") || msgLower.includes("hey")) {
+        return getRandomResponse("greeting");
+      } else if (msgLower.includes("thank") || msgLower.includes("thanks")) {
+        return getRandomResponse("thanks");
+      } else if (msgLower.includes("symptom") || msgLower.includes("pain") || msgLower.includes("feel")) {
+        return getRandomResponse("symptom");
+      } else if (msgLower.includes("cost") || msgLower.includes("fee") || msgLower.includes("price")) {
+        return getRandomResponse("cost");
+      } else if (msgLower.includes("cancel")) {
+        return getRandomResponse("cancel");
+      } else if (msgLower.includes("location") || msgLower.includes("address") || msgLower.includes("clinic")) {
+        return getRandomResponse("location");
+      } else if (msgLower.includes("circumcision") || msgLower.includes("tuli")) {
+        return getRandomResponse("circumcision");
+      } else if (msgLower.includes("inamo") || msgLower.includes("gago") || msgLower.includes("ina mo")) {
+        return getRandomResponse("inappropriate");
+      } else {
+        return getRandomResponse("default");
+      }
+    };
+  };    
   // TIMESTAMP
   const formatTime = (timestamp) => {
     const date = new Date(timestamp);
@@ -446,6 +490,7 @@ const MinimizedChat = ({ doctor, onMaximize, onClose }) => {
       className={styles.main2}
       sx={{
         width: "100%",
+        boxShadow: 3,
         backgroundColor: "#208a3c",
         color: "white",
         borderRadius: "8px 8px 0 0",
@@ -653,23 +698,20 @@ const DoctorCard = ({ doctor, onClick }) => {
   const styles = useStyles();
 
   return (
-<Card
-  className={`${styles.card} ${styles.cardhover} ${styles.cardsize1}`}
-  sx={{
-    width: "100%",
-    maxWidth: "300px", // Prevents the card from becoming too wide
-    height: "auto",
-    display: "flex",
-    flexDirection: "column",
-    transition: "transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out",
+    <Card
+      className={`${styles.card} ${styles.cardhover} ${styles.cardsize1}`}
+      sx={{
+        width: "100%",
+        height: "auto",
+        display: "flex",
+        flexDirection: "column",
+        transition: "transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out",
 
-    "@media (max-width: 600px)": {
-      maxWidth: "250px", // Reduce size on small screens
-    },
-  }}
->
-
-
+        "@media (max-width: 600px)": {
+          maxWidth: "250px", // Reduce size on small screens
+        },
+      }}
+    >
       <CardActionArea
         onClick={onClick}
         sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}
@@ -800,8 +842,15 @@ const DoctorsList = () => {
 
   return (
     <Fade in={true} timeout={1000}>
-<Box className={`${styles.root} ${styles.green}`}>
-<Container className={`${styles.main3} ${styles.center2}`}sx={{ py: 2 }}>
+      <Box
+        sx={{ minHeight: "100vh" }}
+        className={`${styles.root} ${styles.green}`}
+      >
+        <Container
+          maxWidth="lg"
+          className={`${styles.main3} ${styles.center2}`}
+          sx={{ py: 2 }}
+        >
           <Box
             my={"25px"}
             sx={{
@@ -829,33 +878,42 @@ const DoctorsList = () => {
           </Box>
 
           <Grid
-  container
-  spacing={2}
-  justifyContent="center"
-  sx={{
-    width: "100%",
-    flexWrap: "wrap",
-    margin: "0 auto",
-  }}
->
-  {doctorsData.map((doctor) => (
-    <Grid
-      item
-      key={doctor.id}
-      xs={12}  // 1 column on extra small screens
-      sm={6}   // 2 columns on small screens
-      md={4}   // 3 columns on medium screens
-      lg={3}   // 4 columns on large screens
-      sx={{
-        display: "flex",
-        justifyContent: "center",
-      }}
-    >
-      <DoctorCard doctor={doctor} onClick={() => handleDoctorClick(doctor)} />
-    </Grid>
-  ))}
-</Grid>
-
+            container
+            spacing={2}
+            justifyContent="center"
+            sx={{
+              width: "100%",
+              margin: "0 auto",
+              flexWrap: "wrap",
+              gridTemplateColumns: {
+                xs: "1fr",
+                sm: "repeat(2, 1fr)",
+                md: "repeat(3, 1fr)",
+                lg: "repeat(4, 1fr)",
+              },
+              gap: 1,
+            }}
+          >
+            {doctorsData.map((doctor) => (
+              <Grid
+                item
+                key={doctor.id}
+                xs={12} // 1 column on extra small screens
+                sm={6} // 2 columns on small screens
+                md={4} // 3 columns on medium screens
+                lg={3} // 4 columns on large screens
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                <DoctorCard
+                  doctor={doctor}
+                  onClick={() => handleDoctorClick(doctor)}
+                />
+              </Grid>
+            ))}
+          </Grid>
 
           {/* DOCTOR DETAIL LIGHTBOX */}
           <DoctorDetailModal
