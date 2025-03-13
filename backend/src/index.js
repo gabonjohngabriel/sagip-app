@@ -25,7 +25,7 @@ app.use(cookieParser());
 
 const corsOptions = {
   origin: [
-    "http://localhost:5001",
+    "http://localhost:5002",
     "https://gabonjohngabriel.github.io",
     "https://sagip-app-backend.onrender.com"
   ],
