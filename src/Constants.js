@@ -1,0 +1,1 @@
+export const MAP_SET_TYPE = 'MAP_SET_TYPE';
