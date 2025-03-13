@@ -124,7 +124,7 @@ const SagipLogoAnimation = ({ onAnimationComplete }) => {
         if (animationPhase === 0 && currentLetter < letterObjects.length) {
           const letter = letterObjects[currentLetter];
           if (letter.material.opacity < 1) {
-            letter.material.opacity += 0.05;
+            letter.material.opacity += 0.2;
             
             // IN
             if (audio.volume < maxVolume) {
@@ -140,11 +140,11 @@ const SagipLogoAnimation = ({ onAnimationComplete }) => {
 
         // FADE OUT
         if (currentLetter === letterObjects.length) {
-          animationPhase = 2;
+          animationPhase = 0.5;
         }
 
         // FADE
-        if (animationPhase === 2) {
+        if (animationPhase === 0.5) {
           let allFadedOut = true;
           letterObjects.forEach((letter) => {
             if (letter.material.opacity > 0) {
