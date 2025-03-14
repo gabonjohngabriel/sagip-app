@@ -738,6 +738,7 @@ const DoctorCard = ({ doctor, onClick }) => {
       sx={{
         width: "100%",
         height: "auto",
+        borderRadius: "15px",
         display: "flex",
         flexDirection: "column",
         transition: "transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out",
@@ -879,12 +880,12 @@ const DoctorsList = () => {
   return (
     <Box
       sx={{ minHeight: "100vh" }}
-      className={`${styles.root} ${styles.green}`}
+      className={`${styles.root} ${styles.center2} ${styles.green}`}
     >
       <Fade in={true} timeout={1000}>
         <Container
           maxWidth="lg"
-          className={`${styles.main3} ${styles.center2}`}
+          className={`${styles.cardsContainer}`}
           sx={{ py: 2 }}
         >
           <Box

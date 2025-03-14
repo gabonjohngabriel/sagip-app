@@ -141,7 +141,7 @@ useEffect(() => {
   return (
     <Box
       className={`${styles.root} ${styles.center2}`}
-      sx={{ display: "flex", height: "100%", bgcolor: "#f7f7f7", p: 2 }}
+      sx={{ display: "flex", height: "100%", bgcolor: "#f7f7f7"}}
     >
       {/* ERROR */}
       <Snackbar 
@@ -158,6 +158,8 @@ useEffect(() => {
       {/* MAIN */}
       <Box
         sx={{
+          width: "100%",
+          height: "75vh",
           display: "flex",
           bgcolor: "#fff",
           borderRadius: 6,

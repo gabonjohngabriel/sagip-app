@@ -97,7 +97,7 @@ const useStyles = makeStyles((theme) => ({
     color: "#136e2c !important",
   },
   white: {
-    color: "#ffffff",
+    color: "#ffffff !important",
   },
   whitebg: {
     backgroundColor: "#ffffff !important",

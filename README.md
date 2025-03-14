@@ -1,25 +1,10 @@
-# ✨ Full Stack Realtime Chat App ✨
-
-![Demo App](/frontend/public/screenshot-for-readme.png)
-
-[Video Tutorial on Youtube](https://youtu.be/ntKkVrQqBYY)
-
-Highlights:
-
-- 🌟 Tech stack: MERN + Socket.io + TailwindCSS + Daisy UI
-- 🎃 Authentication && Authorization with JWT
-- 👾 Real-time messaging with Socket.io
-- 🚀 Online user status
-- 👌 Global state management with Zustand
-- 🐞 Error handling both on the server and on the client
-- ⭐ At the end Deployment like a pro for FREE!
-- ⏳ And much more!
+# ✨ SAGIP APP ✨
 
 ### Setup .env file
 
 ```js
 MONGODB_URI=...
-PORT=5001
+PORT=5002
 JWT_SECRET=...
 
 CLOUDINARY_CLOUD_NAME=...
@@ -40,3 +25,17 @@ npm run build
 ```shell
 npm start
 ```
+### Repo
+
+…or create a new repository on the command line
+echo "# sagip-app" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/gabonjohngabriel/sagip-app.git
+git push -u origin main
+…or push an existing repository from the command line
+git remote add origin https://github.com/gabonjohngabriel/sagip-app.git
+git branch -M main
+git push -u origin main

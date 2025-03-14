@@ -1,164 +1,185 @@
-import { React, useMemo } from "react";
-import {
-  CardActionArea,
-  CardContent,
-  Typography,
-  Box,
-  Card,
-  CardMedia,
-  Fade,
-  Grid,
-  Container,
-} from "@mui/material";
+import { React } from "react";
+import { Box, Typography, Container, Grid, Card, CardActionArea, CardMedia, CardContent, Fade } from "@mui/material";
 import Logo from "./Logo";
 import { useNavigate } from "react-router-dom";
 import useStyles from "./Styles";
 import { useAuthStore } from "./store/useAuthStore";
 
-export default function ChooseMenu(props) {
+export default function ChooseMenu() {
   const styles = useStyles();
   const navigate = useNavigate();
-  const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
+  const { authUser } = useAuthStore();
 
   const menuItems = [
     {
       title: "MAP",
+      description: "Locate nearby healthcare facilities",
       image: "./images/map.png",
       route: "/choose/map",
     },
     {
       title: "E-PHARMACY",
+      description: "Order medicines from pharmaceutical companies directly",
       image: "./images/appointment.png",
       route: "/choose/pharmacy",
     },
     {
       title: "HEALTH PROFESSIONALS",
+      description: "Meet the healthcare aide",
       image: "./images/medical-team.png",
       route: "/choose/healthprofessionals",
     },
     {
       title: "APPOINTMENT",
+      description: "Book medical schedule with your respective hospitals or clinics",
       image: "./images/medical-appointment.png",
       route: "/choose/appointment",
     },
     {
       title: "E-PAYMENT",
+      description: "Pay for your medical bills online and dashboard for hospitals",
       image: "./images/credit-card.png",
       route: "/choose/epayment",
     },
     {
-      title: authUser ? "CHAT" : "ACCOUNT",
+      title: authUser ? "CHAT" : "LOGIN",
+      description: authUser ? "Start communicate with your health professionals" : "Login to start communicate with your health professionals",
       image: authUser ? "./images/chat.png" : "./images/user.png",
       route: authUser ? "/choose/chat" : "/choose/login",
     },
   ];
 
   return (
-    <Box
-      className={`${styles.root} ${styles.cardsContainer} ${styles.green}`}
-      sx={{ minHeight: "100vh" }}
-    >
+    <Box 
+    className={`${styles.root} ${styles.center2}`}
+    sx={{ 
+      minHeight: "100vh", 
+    bgcolor: "#208a3c" }}>
       <Fade in={true} timeout={1500}>
         <Container maxWidth="lg" sx={{ py: 4 }}>
-          <Box className={`${styles.main}`} sx={{ textAlign: "center" }}>
+          <Box sx={{ textAlign: "center", mb: 3 }}>
             <Logo large />
-            <Typography
-              variant="h6"
-              component="h6"
-              className={`${styles.poppins}`}
-              marginBottom={1}
-            >
-              SAGIP APP
+            <Typography 
+            variant="h2" 
+            className={`${styles.poppins} ${styles.white} ${styles.bold}`} 
+            sx={{ mt: 2, color: "#333" }}>
+              SAGIP
             </Typography>
-            <Typography
-              variant="h3"
-              className={`${styles.poppins} ${styles.bold}`}
-              sx={{ mb: 4 }}
-            >
-              MENU
+            <Typography 
+            variant="h5" 
+            className={`${styles.poppins} ${styles.white}`} 
+            sx={{ 
+              mt: 1, 
+              color: "#666", 
+              maxWidth: "800px", 
+              mx: "auto",
+              lineHeight: "30px",
+              }}>
+              Access all your healthcare needs in this haven with our comprehensive medical services.
             </Typography>
+          </Box>
 
-            <Grid
-              className={` ${styles.cardsContainer} `}
-              container
-              spacing={3}
-              justifyContent="center"
-            >
-              {menuItems.map((item, index) => (
-                <Grid
-                  item
-                  xs={6}
-                  sm={4}
-                  md={4}
-                  lg={2.4}
-                  key={index}
-                  sx={{
+          <Grid 
+          container spacing={4} justifyContent="center">
+            {menuItems.map((item, index) => (
+              <Grid item xs={12} sm={6} md={4} key={index}>
+                <Card 
+                  sx={{ 
+                    borderRadius: 4, 
+                    overflow: "hidden", 
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                    transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                    "&:hover": {
+                      transform: "translateY(-4px)",
+                      boxShadow: "0 8px 24px rgba(0,0,0,0.15)"
+                    },
+                    height: "100%",
                     display: "flex",
-                    justifyContent: "center",
+                    flexDirection: "column"
                   }}
                 >
-                  <Card
-                    className={` ${styles.card} ${styles.cardhover}`}
-                    sx={{
-                      width: "100%",
-                      maxWidth: { xs: "160px", sm: "180px", md: "220px" },
-                      height: { xs: "220px", sm: "260px", md: "300px" },
-                      display: "flex",
-                      flexDirection: "column",
-                      transition: "filter 0.3s ease, opacity 0.3s ease",
+                  <CardActionArea 
+                    onClick={() => navigate(item.route)}
+                    sx={{ 
+                      display: "flex", 
+                      flexDirection: "column", 
+                      alignItems: "center",
+                      height: "100%",
+                      p: 2
                     }}
                   >
-                    <CardActionArea
-                      onClick={() => navigate(item.route)}
-                      sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                        height: "100%",
-                        p: 1,
-                      }}
-                    >
+                    <Box sx={{ 
+                      width: 120, 
+                      height: 120, 
+                      bgcolor: "#f0f7ff", 
+                      borderRadius: "50%", 
+                      display: "flex", 
+                      alignItems: "center", 
+                      justifyContent: "center",
+                      mb: 2
+                    }}>
                       <CardMedia
                         component="img"
                         alt={item.title}
                         image={item.image}
-                        sx={{
-                          height: { xs: "120px", sm: "160px", md: "200px" },
-                          objectFit: "contain",
-                          p: 1,
+                        sx={{ 
+                          width: 80, 
+                          height: 80, 
+                          objectFit: "contain"
                         }}
                       />
-                      <CardContent
-                        sx={{
-                          flexGrow: 1,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          p: { xs: 1, sm: 2 },
+                    </Box>
+                    <CardContent sx={{ textAlign: "center", flexGrow: 1, display: "flex", flexDirection: "column" }}>
+                      <Typography 
+                        variant="h6" 
+                        component="h3" 
+                        className={`${styles.poppins} ${styles.bold}`}
+                        sx={{ color: "#333", mb: 1, lineHeight: "25px" }}
+                      >
+                        {item.title}
+                      </Typography>
+                      <Typography 
+                        variant="body2" 
+                        color="textSecondary" 
+                        className={styles.poppins}
+                        sx={{ 
+                          mb: 2, 
+                          lineHeight: "18px"
                         }}
                       >
-                        <Typography
-                          variant="h6"
-                          component="p"
-                          color="textPrimary"
-                          className={`${styles.poppins} ${styles.textSpacing} ${styles.bold}`}
-                          sx={{
-                            fontSize: {
-                              xs: "0.75rem",
-                              sm: "0.9rem",
-                              md: "1.25rem",
-                            },
-                            hyphens: "auto",
+                        {item.description}
+                      </Typography>
+                      <Box sx={{ mt: "auto", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <Typography 
+                          variant="body2" 
+                          className={styles.poppins}
+                          sx={{ color: "#777" }}
+                        >
+                          SAGIP APP
+                        </Typography>
+                        <Box 
+                          sx={{ 
+                            bgcolor: "#4caf50", 
+                            width: 28, 
+                            height: 28, 
+                            borderRadius: "50%", 
+                            display: "flex", 
+                            alignItems: "center", 
+                            justifyContent: "center",
+                            color: "#fff",
+                            fontSize: "1.2rem",
+                            fontWeight: "bold"
                           }}
                         >
-                          {item.title}
-                        </Typography>
-                      </CardContent>
-                    </CardActionArea>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
-          </Box>
+                          +
+                        </Box>
+                      </Box>
+                    </CardContent>
+                  </CardActionArea>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
         </Container>
       </Fade>
     </Box>

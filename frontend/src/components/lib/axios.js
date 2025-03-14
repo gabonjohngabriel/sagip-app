@@ -2,8 +2,8 @@ import axios from "axios";
 
 const isProduction = window.location.hostname !== 'localhost';
 const BASE_URL = isProduction 
-  ? "https://sagip-app-backend.onrender.com"
-  : "http://localhost:5174";
+  ? "http://localhost:5001/api"
+  : "http://localhost:5174/api";
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL + "/api",

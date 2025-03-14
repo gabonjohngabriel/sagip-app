@@ -6,7 +6,7 @@ import { io } from "socket.io-client";
 // Use a hardcoded BASE_URL instead of import.meta.env.MODE
 // For production, you might want to use window.location.origin or a specific URL
 const BASE_URL = process.env.NODE_ENV === "development" 
-  ? "http://localhost:5174" 
+  ? "http://localhost:5002" 
   : "https://gabonjohngabriel.github.io/";
 
 export const useAuthStore = create((set, get) => ({
