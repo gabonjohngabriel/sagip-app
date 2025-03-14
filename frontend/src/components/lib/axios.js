@@ -2,8 +2,8 @@ import axios from "axios";
 
 const isProduction = window.location.hostname !== 'localhost';
 const BASE_URL = isProduction 
-  ? "http://localhost:5001/api"
-  : "http://localhost:5174/api";
+  ? "http://localhost:5002/"
+  : "http://localhost:5174/";
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL + "/api",
