@@ -17,7 +17,7 @@ const router = express.Router();
 router.post("/login", login);
 export default router;
 
-const PORT = process.env.PORT || 5174;
+const PORT = process.env.PORT || 5173;
 const __dirname = path.resolve();
 
 app.use(express.json());
