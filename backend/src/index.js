@@ -17,7 +17,7 @@ const router = express.Router();
 router.post("/login", login);
 export default router;
 
-const PORT = process.env.PORT || 5173;
+const PORT = process.env.PORT || 5002;
 const __dirname = path.resolve();
 
 app.use(express.json());
@@ -25,7 +25,7 @@ app.use(cookieParser());
 
 const corsOptions = {
   origin: [
-    "http://localhost:5173"
+    "http://localhost:5002"
   ],
   credentials: true, // Allow cookies
   methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods

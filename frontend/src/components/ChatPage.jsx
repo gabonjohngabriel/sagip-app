@@ -57,7 +57,7 @@ useEffect(() => {
         // Set up a periodic refresh of the users list
         intervalId = setInterval(() => {
           refreshUsersList();
-        }, 30000); // Refresh every 30 seconds
+        }, 1000); // Refresh every 30 seconds
       }
     } catch (err) {
       setError("Failed to connect. Please refresh the page.");

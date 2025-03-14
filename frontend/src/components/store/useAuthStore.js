@@ -5,9 +5,10 @@ import { io } from "socket.io-client";
 
 // Use a hardcoded BASE_URL instead of import.meta.env.MODE
 // For production, you might want to use window.location.origin or a specific URL
-const BASE_URL = process.env.NODE_ENV === "development" 
-  ? "http://localhost:5002" 
-  : "https://gabonjohngabriel.github.io/";
+const BASE_URL =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:5173"
+    : "https://gabonjohngabriel.github.io/";
 
 export const useAuthStore = create((set, get) => ({
   authUser: null,
@@ -52,30 +53,32 @@ export const useAuthStore = create((set, get) => ({
     try {
       const res = await axiosInstance.post("/auth/login", data);
       
-      // Add debugging to verify token
-      console.log("Token received:", res.data.token);
-      
-      if (res.data.token) {
+      // Check if token exists in the expected format
+      if (res.data && res.data.token) {
         localStorage.setItem("token", res.data.token);
-      } else {
-        console.error("No token in response:", res.data);
+        set({ 
+          authUser: res.data.user || res.data, // Handle both formats
+          token: res.data.token 
+        });
+      } 
+      // Handle case where API returns user directly without nesting
+      else if (res.data && res.data._id) {
+        // If API doesn't return token, this is an error but we're handling gracefully
+        console.warn("API response missing token, authentication may fail");
+        set({ authUser: res.data });
       }
       
-      set({ authUser: res.data });
       toast.success("Logged in successfully");
-      
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      
       get().connectSocket();
       return { success: true };
     } catch (error) {
-        toast.error(error.response?.data?.message || "Login failed");
+      toast.error(error.response?.data?.message || "Login failed");
       return { success: false, error: error.response?.data?.message };
     } finally {
       set({ isLoggingIn: false });
     }
   },
-    
+  
   logout: async () => {
     try {
       await axiosInstance.post("/auth/logout");
@@ -118,7 +121,7 @@ export const useAuthStore = create((set, get) => ({
       set({ onlineUsers: userIds });
     });
   },
-  
+
   disconnectSocket: () => {
     if (get().socket?.connected) get().socket.disconnect();
   },
