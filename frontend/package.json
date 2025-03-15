@@ -1,6 +1,6 @@
 {
   "name": "medical-kiosk",
-  "homepage": "https://gabonjohngabriel.github.io/sagip-app/",
+  "homepage": "/sagip-app",
   "version": "0.1.0",
   "description": "Medical Kiosk App",
   "author": "Gabriel Gabon",
@@ -55,7 +55,6 @@
     "web-vitals": "^4.2.4",
     "zustand": "^5.0.3"
   },
-  "main": "main.js",
   "scripts": {
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
