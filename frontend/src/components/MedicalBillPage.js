@@ -306,6 +306,234 @@ const BillPage = () => {
         className={`${styles.root} ${styles.center}`}
         sx={{ bgcolor: "#f9f9f9", minHeight: "100vh", py: 2 }}
       >
+        {/* HEADER */}
+      <AppBar
+        position="sticky"
+        color="default"
+        elevation={1}
+        sx={{
+          bgcolor: "#fff",
+          borderRadius: 5,
+          borderBottom: "1px solid #e0e0e0",
+        }}
+      >
+        <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Typography
+              className={`${styles.poppins} ${styles.bold}`}
+              variant="h6"
+              component="div"
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                color: "#2e7d32",
+                mr: 1,
+              }}
+            >
+              <Logo
+                component="span"
+                sx={{
+                  display: "inline-block",
+                  mr: 0.5,
+                  color: "white",
+                  p: 0.5,
+                }}
+              />
+              SAGIP
+            </Typography>
+
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                ml: 2,
+                border: "1px solid #e0e0e0",
+                borderRadius: "16px",
+                p: "5px 10px",
+                fontSize: "0.75rem",
+              }}
+            >
+              <LocationOnIcon fontSize="small" sx={{ mr: 0.5 }} />
+              <Typography variant="caption">Pampanga</Typography>
+            </Box>
+          </Box>
+
+          <Box
+            sx={{
+              display: { xs: "none", md: "flex" },
+              alignItems: "center",
+            }}
+          >
+            <TextField
+              size="small"
+              placeholder="Search"
+              variant="outlined"
+              InputProps={{
+                className: styles.poppins,
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+                sx: { borderRadius: "50px", bgcolor: "#f5f5f5" },
+              }}
+              sx={{ width: 280, mr: 2 }}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </Box>
+
+          <Box
+            sx={{
+              display: { xs: "none", md: "flex" },
+              alignItems: "center",
+            }}
+          >
+            <Button
+              onClick={() => navigate("/choose/healthprofessionals")}
+              className={`${styles.poppins} ${styles.green}`}
+              variant="contained"
+              color="primary"
+              size="small"
+              sx={{
+                mr: 1,
+                borderRadius: "16px",
+                display: { xs: "none", sm: "flex" },
+                textTransform: "none",
+              }}
+            >
+              Medical Professionals
+            </Button>
+            <Button
+              onClick={() => navigate("/choose/appointment")}
+              className={`${styles.poppins} ${styles.green}`}
+              variant="contained"
+              color="primary"
+              size="small"
+              sx={{
+                mr: 1,
+                borderRadius: "16px",
+                display: { xs: "none", sm: "flex" },
+                textTransform: "none",
+              }}
+            >
+              Appointment
+            </Button>
+            <Button
+              className={`${styles.poppins} ${styles.green}`}
+              onClick={() => navigate("/choose/login")}
+              variant="contained"
+              color="primary"
+              size="small"
+              sx={{
+                mr: 1,
+                borderRadius: "16px",
+                textTransform: "none",
+              }}
+            >
+              Account
+            </Button>
+            <IconButton
+              onClick={handleCheckout}
+              variant="contained"
+              sx={{ color: "green", mr: 1 }}
+            >
+              <Badge badgeContent={cart.length} color="error">
+                <ShoppingCartIcon />
+              </Badge>
+            </IconButton>
+          </Box>
+        </Toolbar>
+      </AppBar>
+
+      {/* MOBILE SEARCH - same as in PharmacyPage.js */}
+      <Box
+        sx={{
+          display: { xs: "block", md: "none" },
+          p: 2,
+          bgcolor: "white",
+        }}
+      >
+        <TextField
+          fullWidth
+          size="small"
+          placeholder="Search locations"
+          variant="outlined"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+            sx: { borderRadius: "50px", bgcolor: "#f5f5f5" },
+          }}
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <Box
+          sx={{
+            display: { xs: "flex", md: "none" },
+            p: 2,
+            bgcolor: "white",
+            alignItems: "center",
+          }}
+        >
+          <Button
+            onClick={() => navigate("/choose/healthprofessionals")}
+            className={`${styles.poppins} ${styles.green}`}
+            variant="contained"
+            color="primary"
+            size="small"
+            sx={{
+              mr: 1,
+              borderRadius: "16px",
+              display: { xs: "flex", sm: "none" },
+              textTransform: "none",
+            }}
+          >
+            Medical Professionals
+          </Button>
+          <Button
+            onClick={() => navigate("/choose/appointment")}
+            className={`${styles.poppins} ${styles.green}`}
+            variant="contained"
+            color="primary"
+            size="small"
+            sx={{
+              mr: 1,
+              borderRadius: "16px",
+              display: { xs: "flex", sm: "none" },
+              textTransform: "none",
+            }}
+          >
+            Appointment
+          </Button>
+          <Button
+            className={`${styles.poppins} ${styles.green}`}
+            onClick={() => navigate("/choose/login")}
+            variant="contained"
+            color="primary"
+            size="small"
+            sx={{
+              mr: 1,
+              borderRadius: "16px",
+              textTransform: "none",
+            }}
+          >
+            Account
+          </Button>
+          <IconButton
+            onClick={handleCheckout}
+            variant="contained"
+            sx={{ color: "green", mr: 1 }}
+          >
+            <Badge badgeContent={cart.length} color="error">
+              <ShoppingCartIcon />
+            </Badge>
+          </IconButton>
+        </Box>
+      </Box>
+
         {showConfetti && <Confetti />}
         <Fade in={true} timeout={1000}>
           <Box className={`${styles.cardsContainer}`}>
@@ -319,240 +547,6 @@ const BillPage = () => {
                   mb: 3,
                 }}
               >
-                <Box>
-                  {/* HEADER */}
-                  <AppBar
-                    position="sticky"
-                    color="default"
-                    elevation={1}
-                    sx={{
-                      bgcolor: "#fff",
-                      borderRadius: 5,
-                      borderBottom: "1px solid #e0e0e0",
-                    }}
-                  >
-                    <Toolbar
-                      sx={{ display: "flex", justifyContent: "space-between" }}
-                    >
-                      <Box sx={{ display: "flex", alignItems: "center" }}>
-                        <Typography
-                          className={`${styles.poppins} ${styles.bold}`}
-                          variant="h6"
-                          component="div"
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            color: "#2e7d32",
-                            mr: 1,
-                          }}
-                        >
-                          <Logo
-                            component="span"
-                            sx={{
-                              display: "inline-block",
-                              mr: 0.5,
-                              color: "white",
-                              p: 0.5,
-                            }}
-                          />
-                          SAGIP
-                        </Typography>
-
-                        <Box
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            ml: 2,
-                            border: "1px solid #e0e0e0",
-                            borderRadius: "16px",
-                            p: "5px 10px",
-                            fontSize: "0.75rem",
-                          }}
-                        >
-                          <LocationOnIcon fontSize="small" sx={{ mr: 0.5 }} />
-                          <Typography variant="caption">Pampanga</Typography>
-                        </Box>
-                      </Box>
-
-                      <Box
-                        sx={{
-                          display: { xs: "none", md: "flex" },
-                          alignItems: "center",
-                        }}
-                      >
-                        <TextField
-                          size="small"
-                          placeholder="Search"
-                          variant="outlined"
-                          InputProps={{
-                            className: styles.poppins,
-                            startAdornment: (
-                              <InputAdornment position="start">
-                                <SearchIcon />
-                              </InputAdornment>
-                            ),
-                            sx: { borderRadius: "50px", bgcolor: "#f5f5f5" },
-                          }}
-                          sx={{ width: 280, mr: 2 }}
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                      </Box>
-
-                      <Box
-                        sx={{
-                          display: { xs: "none", md: "flex" },
-                          alignItems: "center",
-                        }}
-                      >
-                        <Button
-                          onClick={() =>
-                            navigate("/choose/healthprofessionals")
-                          }
-                          className={`${styles.poppins} ${styles.green}`}
-                          variant="contained"
-                          color="primary"
-                          size="small"
-                          sx={{
-                            mr: 1,
-                            borderRadius: "16px",
-                            display: { xs: "none", sm: "flex" },
-                            textTransform: "none",
-                          }}
-                        >
-                          Medical Professionals
-                        </Button>
-                        <Button
-                          onClick={() => navigate("/choose/appointment")}
-                          className={`${styles.poppins} ${styles.green}`}
-                          variant="contained"
-                          color="primary"
-                          size="small"
-                          sx={{
-                            mr: 1,
-                            borderRadius: "16px",
-                            display: { xs: "none", sm: "flex" },
-                            textTransform: "none",
-                          }}
-                        >
-                          Appointment
-                        </Button>
-                        <Button
-                          className={`${styles.poppins} ${styles.green}`}
-                          onClick={() => navigate("/choose/login")}
-                          variant="contained"
-                          color="primary"
-                          size="small"
-                          sx={{
-                            mr: 1,
-                            borderRadius: "16px",
-                            textTransform: "none",
-                          }}
-                        >
-                          Account
-                        </Button>
-                        <IconButton
-                          onClick={handleCheckout}
-                          variant="contained"
-                          sx={{ color: "green", mr: 1 }}
-                        >
-                          <Badge badgeContent={cart.length} color="error">
-                            <ShoppingCartIcon />
-                          </Badge>
-                        </IconButton>
-                      </Box>
-                    </Toolbar>
-                  </AppBar>
-
-                  {/* MOBILE */}
-                  <Box
-                    sx={{
-                      display: { xs: "block", md: "none" },
-                      p: 2,
-                      bgcolor: "white",
-                    }}
-                  >
-                    <TextField
-                      fullWidth
-                      size="small"
-                      placeholder="Medicine and Healthcare items"
-                      variant="outlined"
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <SearchIcon />
-                          </InputAdornment>
-                        ),
-                        sx: { borderRadius: "50px", bgcolor: "#f5f5f5" },
-                      }}
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                    <Box
-                      sx={{
-                        display: { xs: "flex", md: "none" },
-                        p: 2,
-                        bgcolor: "white",
-                        alignItems: "center",
-                      }}
-                    >
-                      <Button
-                        onClick={() => navigate("/choose/healthprofessionals")}
-                        className={`${styles.poppins} ${styles.green}`}
-                        variant="contained"
-                        color="primary"
-                        size="small"
-                        sx={{
-                          mr: 1,
-                          borderRadius: "16px",
-                          display: { xs: "flex", sm: "none" },
-                          textTransform: "none",
-                        }}
-                      >
-                        Medical Professionals
-                      </Button>
-                      <Button
-                        onClick={() => navigate("/choose/appointment")}
-                        className={`${styles.poppins} ${styles.green}`}
-                        variant="contained"
-                        color="primary"
-                        size="small"
-                        sx={{
-                          mr: 1,
-                          borderRadius: "16px",
-                          display: { xs: "flex", sm: "none" },
-                          textTransform: "none",
-                        }}
-                      >
-                        Appointment
-                      </Button>
-                      <Button
-                        className={`${styles.poppins} ${styles.green}`}
-                        onClick={() => navigate("/choose/login")}
-                        variant="contained"
-                        color="primary"
-                        size="small"
-                        sx={{
-                          mr: 1,
-                          borderRadius: "16px",
-                          textTransform: "none",
-                        }}
-                      >
-                        Account
-                      </Button>
-                      <IconButton
-                        onClick={handleCheckout}
-                        variant="contained"
-                        sx={{ color: "green", mr: 1 }}
-                      >
-                        <Badge badgeContent={cart.length} color="error">
-                          <ShoppingCartIcon />
-                        </Badge>
-                      </IconButton>
-                    </Box>
-                  </Box>
-                </Box>
-
                 {/* BODY */}
                 <Box sx={{ padding: isSmallScreen ? "16px" : "16px" }}>
                   <Box
