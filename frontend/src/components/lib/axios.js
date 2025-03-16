@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const API_URL = 
-  process.env.NODE_ENV === "development" 
+  import.meta.env.MODE === "development" 
     ? "http://localhost:5002/api" 
     : "/api";
 
