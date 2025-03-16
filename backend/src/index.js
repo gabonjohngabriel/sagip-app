@@ -25,7 +25,7 @@ app.use(cookieParser());
 
 const corsOptions = {
   origin: [
-    "http://localhost:5002",  // Keep for local testing
+    "http://localhost:5002",  // FRONTEND
     "https://sagip-app.onrender.com"
   ],
   credentials: true, // Allow cookies and authentication headers
@@ -42,10 +42,12 @@ app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../frontend/build")));
+  const buildPath = path.join(__dirname, "../frontend/build");
+  console.log("Serving static files from:", buildPath);
+  app.use(express.static(buildPath));
   
   app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend", "build", "index.html"));
+    res.sendFile(path.join(buildPath, "index.html"));
   });
 }
 
