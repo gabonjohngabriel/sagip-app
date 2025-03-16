@@ -1,9 +1,7 @@
 import axios from "axios";
 
-const isProduction = window.location.hostname !== 'localhost';
-
 const axiosInstance = axios.create({
-  baseURL: isProduction ? "/api" : "http://localhost:5173/api",
+  baseURL: process.env.REACT_APP_API_URL || "http://localhost:5173/api",
   withCredentials: true,
   timeout: 10000 // 10 second timeout
 });

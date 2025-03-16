@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -8,11 +9,14 @@ import {
   Card,
   CardContent,
   Avatar,
+  AppBar,
   IconButton,
   Divider,
   ListItem,
   ListItemAvatar,
   ListItemText,
+  Toolbar,
+  InputAdornment,
   ListItemSecondaryAction,
   Chip,
   TextField,
@@ -29,30 +33,28 @@ import {
   Fade,
   Zoom,
 } from "@mui/material";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { useTheme } from "@mui/material/styles";
 import SearchIcon from "@mui/icons-material/Search";
-import SettingsIcon from "@mui/icons-material/Settings";
-import NotificationsIcon from "@mui/icons-material/Notifications";
+import SagipLogoAnimation from "./SagipLogoAnimation";
+import Logo from "./Logo";
 import SendIcon from "@mui/icons-material/Send";
 import SyncAltIcon from "@mui/icons-material/SyncAlt";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import CalendarIcon from "@mui/icons-material/CalendarMonth";
 import SyncIcon from "@mui/icons-material/Sync";
-import HomeIcon from "@mui/icons-material/Home";
-import PaymentIcon from "@mui/icons-material/Payment";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import AddIcon from "@mui/icons-material/Add";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
-import HistoryIcon from "@mui/icons-material/History";
 import HealthAndSafetyIcon from "@mui/icons-material/HealthAndSafety";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import MedicalServicesIcon from "@mui/icons-material/MedicalServices";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
 import useStyles from "./Styles";
-import SagipLogoAnimation from "./SagipLogoAnimation";
 
 // Custom theme with green colors
 const theme = createTheme({
@@ -70,7 +72,7 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: "'Poppins', 'Roboto', 'Arial', sans-serif",
+    fontFamily: "'Poppins', sans-serif",
     h4: {
       fontWeight: 700,
     },
@@ -118,8 +120,18 @@ const BillPage = () => {
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [selectedBill, setSelectedBill] = useState(null);
+  const [openPaymentDialog, setOpenPaymentDialog] = useState(false);
+  const [cart, setCart] = useState([]);
+
   const [showPage, setShowPage] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const styles = useStyles();
+  const navigate = useNavigate();
+
+  // Handle checkout
+  const handleCheckout = () => {
+    setOpenPaymentDialog(true);
+  };
 
   // Handle animation completion
   const handleAnimationComplete = () => {
@@ -307,145 +319,239 @@ const BillPage = () => {
                   mb: 3,
                 }}
               >
-                {/* HEADER */}
-                <Box
-                  sx={{
-                    padding: isSmallScreen ? "12px 16px" : "16px 24px",
-                    display: "flex",
-                    flexDirection: isSmallScreen ? "column" : "row",
-                    alignItems: isSmallScreen ? "flex-start" : "center",
-                    justifyContent: "space-between",
-                    bgcolor: "#208a3c",
-                    color: "white",
-                  }}
-                >
-                  <Box sx={{ display: "flex", alignItems: "center" }}>
-                    <HealthAndSafetyIcon sx={{ mr: 1, fontSize: 25 }} />
-                    <Typography
-                      className={`${styles.bold} ${styles.poppins}`}
-                      variant="h4"
-                    >
-                      SAGIP
-                    </Typography>
-                  </Box>
-
-                  <Box
-                    className={`${styles.main3} ${styles.cardsContainer}`}
+                <Box>
+                  {/* HEADER */}
+                  <AppBar
+                    position="sticky"
+                    color="default"
+                    elevation={1}
                     sx={{
-                      display: "flex",
-                      gap: 0.5,
-                      mt: isSmallScreen ? 2 : 0,
-                      alignItems: "center",
-                      width: isSmallScreen ? "100%" : "auto",
-                      justifyContent: isSmallScreen
-                        ? "space-between"
-                        : "flex-end",
+                      bgcolor: "#fff",
+                      borderRadius: 5,
+                      borderBottom: "1px solid #e0e0e0",
                     }}
                   >
-                    {!isSmallScreen && (
-                      <Tabs
-                        value={selectedTab}
-                        onChange={(e, newValue) => setSelectedTab(newValue)}
+                    <Toolbar
+                      sx={{ display: "flex", justifyContent: "space-between" }}
+                    >
+                      <Box sx={{ display: "flex", alignItems: "center" }}>
+                        <Typography
+                          className={`${styles.poppins} ${styles.bold}`}
+                          variant="h6"
+                          component="div"
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            color: "#2e7d32",
+                            mr: 1,
+                          }}
+                        >
+                          <Logo
+                            component="span"
+                            sx={{
+                              display: "inline-block",
+                              mr: 0.5,
+                              color: "white",
+                              p: 0.5,
+                            }}
+                          />
+                          SAGIP
+                        </Typography>
+
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            ml: 2,
+                            border: "1px solid #e0e0e0",
+                            borderRadius: "16px",
+                            p: "5px 10px",
+                            fontSize: "0.75rem",
+                          }}
+                        >
+                          <LocationOnIcon fontSize="small" sx={{ mr: 0.5 }} />
+                          <Typography variant="caption">Pampanga</Typography>
+                        </Box>
+                      </Box>
+
+                      <Box
                         sx={{
-                          "& .MuiTab-root": {
-                            color: "rgba(255, 255, 255, 0.7)",
-                          },
-                          "& .Mui-selected": { color: "white" },
-                          "& .MuiTabs-indicator": {
-                            backgroundColor: "rgba(255, 255, 255, 1)",
-                          },
+                          display: { xs: "none", md: "flex" },
+                          alignItems: "center",
                         }}
                       >
-                        <Tab
-                          className={`${styles.poppins}`}
-                          label="Dashboard"
+                        <TextField
+                          size="small"
+                          placeholder="Search"
+                          variant="outlined"
+                          InputProps={{
+                            className: styles.poppins,
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                <SearchIcon />
+                              </InputAdornment>
+                            ),
+                            sx: { borderRadius: "50px", bgcolor: "#f5f5f5" },
+                          }}
+                          sx={{ width: 280, mr: 2 }}
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
                         />
-                        <Tab className={`${styles.poppins}`} label="Payments" />
-                        <Tab className={`${styles.poppins}`} label="History" />
-                        <Tab className={`${styles.poppins}`} label="Settings" />
-                      </Tabs>
-                    )}
+                      </Box>
 
-                    <TextField
-                      placeholder="Search"
-                      variant="outlined"
-                      size="small"
-                      InputProps={{
-                        startAdornment: (
-                          <SearchIcon sx={{ mr: 1, color: "white" }} />
-                        ),
-                        sx: {
-                          fontFamily: "Poppins, sans-serif",
-                          color: "white",
-                          "&::placeholder": {
-                            color: "rgba(255, 255, 255, 0.7)",
-                          },
-                          "& .MuiOutlinedInput-notchedOutline": {
-                            borderColor: "rgba(255,255,255,0.3)",
-                          },
-                          "&:hover .MuiOutlinedInput-notchedOutline": {
-                            borderColor: "rgba(255,255,255,0.5)",
-                          },
-                          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                            borderColor: "white",
-                          },
-                        },
-                      }}
-                      sx={{
-                        width: isSmallScreen ? "50%" : "170px",
-                        ml: isSmallScreen ? 0 : 2,
-                        "& .MuiInputBase-root": {
-                          color: "white",
-                          borderRadius: "20px",
-                        },
-                      }}
-                    />
-
-                    <Box sx={{ display: "flex" }}>
-                      <Tooltip title="Settings">
-                        <IconButton sx={{ color: "white" }}>
-                          <SettingsIcon />
-                        </IconButton>
-                      </Tooltip>
-
-                      <Tooltip title="Notifications">
-                        <IconButton sx={{ color: "white" }}>
-                          <Badge badgeContent={"99+"} color="error">
-                            <NotificationsIcon />
+                      <Box
+                        sx={{
+                          display: { xs: "none", md: "flex" },
+                          alignItems: "center",
+                        }}
+                      >
+                        <Button
+                          onClick={() =>
+                            navigate("/choose/healthprofessionals")
+                          }
+                          className={`${styles.poppins} ${styles.green}`}
+                          variant="contained"
+                          color="primary"
+                          size="small"
+                          sx={{
+                            mr: 1,
+                            borderRadius: "16px",
+                            display: { xs: "none", sm: "flex" },
+                            textTransform: "none",
+                          }}
+                        >
+                          Medical Professionals
+                        </Button>
+                        <Button
+                          onClick={() => navigate("/choose/appointment")}
+                          className={`${styles.poppins} ${styles.green}`}
+                          variant="contained"
+                          color="primary"
+                          size="small"
+                          sx={{
+                            mr: 1,
+                            borderRadius: "16px",
+                            display: { xs: "none", sm: "flex" },
+                            textTransform: "none",
+                          }}
+                        >
+                          Appointment
+                        </Button>
+                        <Button
+                          className={`${styles.poppins} ${styles.green}`}
+                          onClick={() => navigate("/choose/login")}
+                          variant="contained"
+                          color="primary"
+                          size="small"
+                          sx={{
+                            mr: 1,
+                            borderRadius: "16px",
+                            textTransform: "none",
+                          }}
+                        >
+                          Account
+                        </Button>
+                        <IconButton
+                          onClick={handleCheckout}
+                          variant="contained"
+                          sx={{ color: "green", mr: 1 }}
+                        >
+                          <Badge badgeContent={cart.length} color="error">
+                            <ShoppingCartIcon />
                           </Badge>
                         </IconButton>
-                      </Tooltip>
+                      </Box>
+                    </Toolbar>
+                  </AppBar>
 
-                      <Tooltip title="Profile">
-                        <Avatar
-                          sx={{
-                            width: 36,
-                            height: 36,
-                            ml: 1,
-                            border: "2px solid white",
-                          }}
-                          src="https://i.pravatar.cc/150?img=11"
-                        />
-                      </Tooltip>
+                  {/* MOBILE */}
+                  <Box
+                    sx={{
+                      display: { xs: "block", md: "none" },
+                      p: 2,
+                      bgcolor: "white",
+                    }}
+                  >
+                    <TextField
+                      fullWidth
+                      size="small"
+                      placeholder="Medicine and Healthcare items"
+                      variant="outlined"
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <SearchIcon />
+                          </InputAdornment>
+                        ),
+                        sx: { borderRadius: "50px", bgcolor: "#f5f5f5" },
+                      }}
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                    <Box
+                      sx={{
+                        display: { xs: "flex", md: "none" },
+                        p: 2,
+                        bgcolor: "white",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Button
+                        onClick={() => navigate("/choose/healthprofessionals")}
+                        className={`${styles.poppins} ${styles.green}`}
+                        variant="contained"
+                        color="primary"
+                        size="small"
+                        sx={{
+                          mr: 1,
+                          borderRadius: "16px",
+                          display: { xs: "flex", sm: "none" },
+                          textTransform: "none",
+                        }}
+                      >
+                        Medical Professionals
+                      </Button>
+                      <Button
+                        onClick={() => navigate("/choose/appointment")}
+                        className={`${styles.poppins} ${styles.green}`}
+                        variant="contained"
+                        color="primary"
+                        size="small"
+                        sx={{
+                          mr: 1,
+                          borderRadius: "16px",
+                          display: { xs: "flex", sm: "none" },
+                          textTransform: "none",
+                        }}
+                      >
+                        Appointment
+                      </Button>
+                      <Button
+                        className={`${styles.poppins} ${styles.green}`}
+                        onClick={() => navigate("/choose/login")}
+                        variant="contained"
+                        color="primary"
+                        size="small"
+                        sx={{
+                          mr: 1,
+                          borderRadius: "16px",
+                          textTransform: "none",
+                        }}
+                      >
+                        Account
+                      </Button>
+                      <IconButton
+                        onClick={handleCheckout}
+                        variant="contained"
+                        sx={{ color: "green", mr: 1 }}
+                      >
+                        <Badge badgeContent={cart.length} color="error">
+                          <ShoppingCartIcon />
+                        </Badge>
+                      </IconButton>
                     </Box>
                   </Box>
                 </Box>
-
-                {isSmallScreen && (
-                  <Tabs
-                    value={selectedTab}
-                    onChange={(e, newValue) => setSelectedTab(newValue)}
-                    variant="fullWidth"
-                    sx={{
-                      bgcolor: "#sadsad",
-                    }}
-                  >
-                    <Tab icon={<HomeIcon />} label="Dashboard" />
-                    <Tab icon={<PaymentIcon />} label="Payments" />
-                    <Tab icon={<HistoryIcon />} label="History" />
-                    <Tab icon={<SettingsIcon />} label="Settings" />
-                  </Tabs>
-                )}
 
                 {/* BODY */}
                 <Box sx={{ padding: isSmallScreen ? "16px" : "16px" }}>
@@ -470,7 +576,7 @@ const BillPage = () => {
                       />
                       <Typography
                         className={`${styles.poppins} ${styles.bold}`}
-                        sx={{ color: "#208a3c", letterSpacing: "-1px" }}
+                        sx={{ color: "#208a3c", letterSpacing: "-0.5px" }}
                         variant="h4"
                         component={motion.h4}
                         initial={{ x: -20, opacity: 0 }}

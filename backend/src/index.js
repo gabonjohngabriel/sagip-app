@@ -25,11 +25,12 @@ app.use(cookieParser());
 
 const corsOptions = {
   origin: [
-    "http://localhost:5002"
+    "http://localhost:5002",  // Keep for local testing
+    "https://sagip-app.onrender.com"
   ],
-  credentials: true, // Allow cookies
-  methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
-  allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
+  credentials: true, // Allow cookies and authentication headers
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
 };
 
 app.use(cors(corsOptions));

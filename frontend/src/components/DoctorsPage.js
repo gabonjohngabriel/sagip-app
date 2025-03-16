@@ -13,20 +13,11 @@ import {
   Paper,
   Divider,
   TextField,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
+  IconButton,
   Dialog,
   DialogContent,
   DialogActions,
   useMediaQuery,
-  IconButton,
-  Drawer,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemAvatar,
   Avatar,
   Badge,
 } from "@mui/material";
@@ -35,8 +26,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import Chat from "@mui/icons-material/Chat";
 import SendIcon from "@mui/icons-material/Send";
 import MinimizeIcon from "@mui/icons-material/Minimize";
-import MaximizeIcon from "@mui/icons-material/Maximize";
-import { Routes, Route, useNavigate, useParams } from "react-router-dom";
+import { Routes, Route, useNavigate, useParams, Link } from "react-router-dom";
 import useStyles from "./Styles";
 import Logo from "./Logo";
 import SagipLogoAnimation from "./SagipLogoAnimation";
@@ -153,6 +143,7 @@ const ChatWindow = ({ doctor, onClose, onMinimize }) => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const messagesEndRef = useRef(null);
+  const navigate = useNavigate();
 
   // LOCAL STORAGE
   useEffect(() => {
@@ -185,7 +176,7 @@ const ChatWindow = ({ doctor, onClose, onMinimize }) => {
     // BOT RESPONSE
     setTimeout(() => {
       const responseMessage = {
-        text: getAutomaticResponse(doctor, message),
+        text: getAutomaticResponse(doctor, message, updatedMessages.length >= 9),
         sender: "doctor",
         timestamp: new Date().toISOString(),
       };
@@ -193,138 +184,148 @@ const ChatWindow = ({ doctor, onClose, onMinimize }) => {
       setMessages(withResponse);
       saveChatMessages(doctor.id, withResponse);
     }, 1000 + Math.random() * 1000);
-
-    // GENERATE MESSAGE FOR BOT
-    const getAutomaticResponse = (doctor, msg) => {
-      const msgLower = String(msg || "").toLowerCase();
-
-      // DESC
-      const extractLocation = (description) => {
-        const fromIndex = description.toLowerCase().indexOf("from ");
-        return fromIndex !== -1
-          ? description.substring(fromIndex + 5).trim()
-          : "our clinic";
-      };
-
-      const doctorLocation = extractLocation(doctor.description);
-
-      const responses = {
-        appointment: [
-          `I'd be happy to help you schedule an appointment. I'm available on ${doctor.availability.join(
-            ", "
-          )}. Would any of those days work for you?`,
-          `Sure! My available days are ${doctor.availability.join(
-            ", "
-          )}. Let me know what works best for you.`,
-          `Let's get you scheduled! I’m available on ${doctor.availability.join(
-            ", "
-          )}. Which day would you prefer?`,
-        ],
-        greeting: [
-          "Hello! How can I assist you today?",
-          "Hi there! What can I do for you?",
-          "Hey! Let me know how I can help.",
-        ],
-        thanks: [
-          "You're welcome! Is there anything else I can help you with?",
-          "No problem! Feel free to ask me anything.",
-          "Glad I could help! Let me know if you need more assistance.",
-        ],
-        symptom: [
-          `I understand you're not feeling well. As a ${doctor.specialty} specialist, I'd like to learn more about your symptoms. However, for a proper diagnosis, we'll need an appointment. Would you like to schedule one?`,
-          `I’m here to help! If you're experiencing discomfort, a consultation would be the best step. Would you like to book one?`,
-          `Your health is important! If you have symptoms, I recommend scheduling an appointment for a proper check-up.`,
-        ],
-        cost: [
-          "Our consultation fees depend on the type of visit. For initial consultations, it's typically around ₱500-800. Would you like more information?",
-          "The consultation fee varies depending on the service. Generally, it ranges from ₱500-800. Let me know if you’d like to proceed.",
-          "Consultation fees are typically between ₱500-800. Would you like to schedule an appointment?",
-        ],
-        cancel: [
-          "I understand you need to cancel or reschedule. Please provide your preferred date and time, and I'll check my availability.",
-          "Need to reschedule? Just let me know your preferred date and time, and I'll adjust accordingly.",
-          "I can assist you with rescheduling. Let me know a new date and time that works for you.",
-        ],
-        location: [
-          `My clinic is located in ${doctorLocation}. Let me know if you need directions!`,
-          `I am based in ${doctorLocation}. Feel free to visit me on my available days.`,
-          `You can find me at ${doctorLocation}. Let me know if you'd like to book an appointment.`,
-        ],
-        circumcision: [
-          "When and where would you like to avail of our circumcision service? Let us know your preferred schedule and location so we can assist you accordingly!",
-          "Looking to avail our circumcision service? Let me know your preferred date and location, and I'll help you book an appointment.",
-          "We offer safe and professional circumcision services. When would you like to schedule your appointment?",
-        ],
-        inappropriate: [
-          "Let's keep our conversation professional and respectful.",
-          "I'm here to assist with medical inquiries. Please keep our discussion appropriate.",
-          "I aim to provide helpful and professional responses. Let’s keep it respectful.",
-          "Tanginamo.",
-        ],
-        default: [
-          "Thank you for your message. To better assist you, would you like to book an appointment or do you have specific questions about my services?",
-          "How can I assist you today? Feel free to ask about my services or book an appointment.",
-          "I'm here to help! Let me know if you’d like to schedule a consultation or need medical advice.",
-        ],
-      };
-
-      // RANDOMIZER FUNCTION
-      const getRandomResponse = (category) => {
-        const options = responses[category];
-        return options[Math.floor(Math.random() * options.length)];
-      };
-
-      // RESPONSE LOGIC
-      if (
-        msgLower.includes("appointment") ||
-        msgLower.includes("schedule") ||
-        msgLower.includes("book")
-      ) {
-        return getRandomResponse("appointment");
-      } else if (
-        msgLower.includes("hello") ||
-        msgLower.includes("hi") ||
-        msgLower.includes("hey")
-      ) {
-        return getRandomResponse("greeting");
-      } else if (msgLower.includes("thank") || msgLower.includes("thanks")) {
-        return getRandomResponse("thanks");
-      } else if (
-        msgLower.includes("symptom") ||
-        msgLower.includes("pain") ||
-        msgLower.includes("feel")
-      ) {
-        return getRandomResponse("symptom");
-      } else if (
-        msgLower.includes("cost") ||
-        msgLower.includes("fee") ||
-        msgLower.includes("price")
-      ) {
-        return getRandomResponse("cost");
-      } else if (msgLower.includes("cancel")) {
-        return getRandomResponse("cancel");
-      } else if (
-        msgLower.includes("location") ||
-        msgLower.includes("address") ||
-        msgLower.includes("clinic")
-      ) {
-        return getRandomResponse("location");
-      } else if (
-        msgLower.includes("circumcision") ||
-        msgLower.includes("tuli")
-      ) {
-        return getRandomResponse("circumcision");
-      } else if (
-        msgLower.includes("inamo") ||
-        msgLower.includes("gago") ||
-        msgLower.includes("ina mo")
-      ) {
-        return getRandomResponse("inappropriate");
-      } else {
-        return getRandomResponse("default");
-      }
-    };
   };
+
+  // GENERATE MESSAGE FOR BOT
+  const getAutomaticResponse = (doctor, msg, showAppointmentButton) => {
+    // If this is the 5th message or more (meaning user has sent 5 messages), show appointment button
+    if (showAppointmentButton) {
+      return (
+        "I see we've been chatting for a while. Would you like to schedule an appointment with me? " +
+        "Click the button below to proceed to appointment scheduling.\n\n" +
+        "<appointment-button>"
+      );
+    }
+    
+    const msgLower = String(msg || "").toLowerCase();
+
+    // DESC
+    const extractLocation = (description) => {
+      const fromIndex = description.toLowerCase().indexOf("from ");
+      return fromIndex !== -1
+        ? description.substring(fromIndex + 5).trim()
+        : "our clinic";
+    };
+
+    const doctorLocation = extractLocation(doctor.description);
+
+    const responses = {
+      appointment: [
+        `I'd be happy to help you schedule an appointment. I'm available on ${doctor.availability.join(
+          ", "
+        )}. Would any of those days work for you?`,
+        `Sure! My available days are ${doctor.availability.join(
+          ", "
+        )}. Let me know what works best for you.`,
+        `Let's get you scheduled! I'm available on ${doctor.availability.join(
+          ", "
+        )}. Which day would you prefer?`,
+      ],
+      greeting: [
+        "Hello! How can I assist you today?",
+        "Hi there! What can I do for you?",
+        "Hey! Let me know how I can help.",
+      ],
+      thanks: [
+        "You're welcome! Is there anything else I can help you with?",
+        "No problem! Feel free to ask me anything.",
+        "Glad I could help! Let me know if you need more assistance.",
+      ],
+      symptom: [
+        `I understand you're not feeling well. As a ${doctor.specialty} specialist, I'd like to learn more about your symptoms. However, for a proper diagnosis, we'll need an appointment. Would you like to schedule one?`,
+        `I'm here to help! If you're experiencing discomfort, a consultation would be the best step. Would you like to book one?`,
+        `Your health is important! If you have symptoms, I recommend scheduling an appointment for a proper check-up.`,
+      ],
+      cost: [
+        "Our consultation fees depend on the type of visit. For initial consultations, it's typically around ₱500-800. Would you like more information?",
+        "The consultation fee varies depending on the service. Generally, it ranges from ₱500-800. Let me know if you'd like to proceed.",
+        "Consultation fees are typically between ₱500-800. Would you like to schedule an appointment?",
+      ],
+      cancel: [
+        "I understand you need to cancel or reschedule. Please provide your preferred date and time, and I'll check my availability.",
+        "Need to reschedule? Just let me know your preferred date and time, and I'll adjust accordingly.",
+        "I can assist you with rescheduling. Let me know a new date and time that works for you.",
+      ],
+      location: [
+        `My clinic is located in ${doctorLocation}. Let me know if you need directions!`,
+        `I am based in ${doctorLocation}. Feel free to visit me on my available days.`,
+        `You can find me at ${doctorLocation}. Let me know if you'd like to book an appointment.`,
+      ],
+      circumcision: [
+        "When and where would you like to avail of our circumcision service? Let us know your preferred schedule and location so we can assist you accordingly!",
+        "Looking to avail our circumcision service? Let me know your preferred date and location, and I'll help you book an appointment.",
+        "We offer safe and professional circumcision services. When would you like to schedule your appointment?",
+      ],
+      inappropriate: [
+        "Let's keep our conversation professional and respectful.",
+        "I'm here to assist with medical inquiries. Please keep our discussion appropriate.",
+        "I aim to provide helpful and professional responses. Let's keep it respectful.",
+        "Tanginamo.",
+      ],
+      default: [
+        "Thank you for your message. To better assist you, would you like to book an appointment or do you have specific questions about my services?",
+        "How can I assist you today? Feel free to ask about my services or book an appointment.",
+        "I'm here to help! Let me know if you'd like to schedule a consultation or need medical advice.",
+      ],
+    };
+
+    // RANDOMIZER FUNCTION
+    const getRandomResponse = (category) => {
+      const options = responses[category];
+      return options[Math.floor(Math.random() * options.length)];
+    };
+
+    // RESPONSE LOGIC
+    if (
+      msgLower.includes("appointment") ||
+      msgLower.includes("schedule") ||
+      msgLower.includes("book")
+    ) {
+      return getRandomResponse("appointment");
+    } else if (
+      msgLower.includes("hello") ||
+      msgLower.includes("hi") ||
+      msgLower.includes("hey")
+    ) {
+      return getRandomResponse("greeting");
+    } else if (msgLower.includes("thank") || msgLower.includes("thanks")) {
+      return getRandomResponse("thanks");
+    } else if (
+      msgLower.includes("symptom") ||
+      msgLower.includes("pain") ||
+      msgLower.includes("feel")
+    ) {
+      return getRandomResponse("symptom");
+    } else if (
+      msgLower.includes("cost") ||
+      msgLower.includes("fee") ||
+      msgLower.includes("price")
+    ) {
+      return getRandomResponse("cost");
+    } else if (msgLower.includes("cancel")) {
+      return getRandomResponse("cancel");
+    } else if (
+      msgLower.includes("location") ||
+      msgLower.includes("address") ||
+      msgLower.includes("clinic")
+    ) {
+      return getRandomResponse("location");
+    } else if (
+      msgLower.includes("circumcision") ||
+      msgLower.includes("tuli")
+    ) {
+      return getRandomResponse("circumcision");
+    } else if (
+      msgLower.includes("inamo") ||
+      msgLower.includes("gago") ||
+      msgLower.includes("ina mo")
+    ) {
+      return getRandomResponse("inappropriate");
+    } else {
+      return getRandomResponse("default");
+    }
+  };
+
   // TIMESTAMP
   const formatTime = (timestamp) => {
     const date = new Date(timestamp);
@@ -415,9 +416,28 @@ const ChatWindow = ({ doctor, onClose, onMinimize }) => {
                 boxShadow: 1,
               }}
             >
-              <Typography variant="body2" className={styles.poppins}>
-                {msg.text}
-              </Typography>
+              {msg.text.includes("<appointment-button>") ? (
+                <>
+                  <Typography variant="body2" className={styles.poppins}>
+                    {msg.text.replace("<appointment-button>", "")}
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    component={Link}
+                    to="/choose/appointment"
+                    size="small"
+                    sx={{ mt: 2 }}
+                    className={styles.poppins}
+                  >
+                    Schedule Appointment
+                  </Button>
+                </>
+              ) : (
+                <Typography variant="body2" className={styles.poppins}>
+                  {msg.text}
+                </Typography>
+              )}
               <Typography
                 variant="caption"
                 sx={{
@@ -518,8 +538,8 @@ const ChatBubble = ({ doctor, onOpen, unreadCount }) => {
 };
 
 // MINIMIZED
-const styles = useStyles;
 const MinimizedChat = ({ doctor, onMaximize, onClose }) => {
+  const styles = useStyles();
   return (
     <Box
       className={styles.main2}
@@ -1022,389 +1042,4 @@ const DoctorsList = () => {
   );
 };
 
-// APPOINTMENT FORM
-const AppointmentForm = ({ doctor, onSubmit }) => {
-  const styles = useStyles();
-  const [formData, setFormData] = useState({
-    date: "",
-    time: "",
-    reason: "",
-    notes: "",
-  });
-
-  const handleChange = (field, value) => {
-    setFormData({
-      ...formData,
-      [field]: value,
-    });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSubmit(formData);
-  };
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <Grid container spacing={3}>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            required
-            fullWidth
-            label="Appointment Date"
-            type="date"
-            value={formData.date}
-            onChange={(e) => handleChange("date", e.target.value)}
-            InputLabelProps={{ shrink: true }}
-            className={styles.poppins}
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6}>
-          <FormControl fullWidth required>
-            <InputLabel id="time-select-label">Preferred Time</InputLabel>
-            <Select
-              labelId="time-select-label"
-              id="time-select"
-              value={formData.time}
-              label="Preferred Time"
-              onChange={(e) => handleChange("time", e.target.value)}
-              className={styles.poppins}
-            >
-              {[
-                "9:00 AM",
-                "10:00 AM",
-                "11:00 AM",
-                "1:00 PM",
-                "2:00 PM",
-                "3:00 PM",
-                "4:00 PM",
-              ].map((time) => (
-                <MenuItem key={time} value={time}>
-                  {time}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
-
-        <Grid item xs={12}>
-          <TextField
-            required
-            fullWidth
-            label="Reason for Visit"
-            value={formData.reason}
-            onChange={(e) => handleChange("reason", e.target.value)}
-            className={styles.poppins}
-          />
-        </Grid>
-
-        <Grid item xs={12}>
-          <TextField
-            fullWidth
-            label="Additional Notes"
-            multiline
-            rows={4}
-            value={formData.notes}
-            onChange={(e) => handleChange("notes", e.target.value)}
-            className={styles.poppins}
-          />
-        </Grid>
-
-        <Grid item xs={12}>
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            fullWidth
-            size="large"
-            className={`${styles.poppins} ${styles.bold}`}
-            startIcon={<Chat />}
-          >
-            Book Appointment
-          </Button>
-        </Grid>
-      </Grid>
-    </form>
-  );
-};
-
-// Appointment Confirmation Component
-const AppointmentConfirmation = ({
-  doctor,
-  appointmentData,
-  onReset,
-  onReturn,
-}) => {
-  const styles = useStyles();
-
-  return (
-    <Box sx={{ textAlign: "center", py: 4 }}>
-      <Typography
-        variant="h6"
-        className={`${styles.poppins} ${styles.bold}`}
-        color="primary"
-        gutterBottom
-      >
-        Appointment Booked Successfully!
-      </Typography>
-      <Typography variant="body1" className={styles.poppins} paragraph>
-        Your appointment with {doctor.name} has been scheduled for{" "}
-        {appointmentData.date} at {appointmentData.time}.
-      </Typography>
-      <Typography variant="body1" className={styles.poppins} paragraph>
-        You will receive a confirmation via email shortly.
-      </Typography>
-      <Button
-        variant="outlined"
-        color="primary"
-        onClick={onReset}
-        className={styles.poppins}
-        sx={{ mr: 2 }}
-      >
-        Book Another Appointment
-      </Button>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={onReturn}
-        className={styles.poppins}
-      >
-        Return to Doctors List
-      </Button>
-    </Box>
-  );
-};
-
-// Doctor detail page
-const DoctorDetail = () => {
-  const styles = useStyles();
-  const navigate = useNavigate();
-  const { id } = useParams();
-  const doctor = doctorsData.find((doc) => doc.id === parseInt(id));
-
-  const [appointmentData, setAppointmentData] = useState(null);
-  const [submitted, setSubmitted] = useState(false);
-
-  const handleSubmit = (formData) => {
-    setAppointmentData(formData);
-    setSubmitted(true);
-    console.log("Appointment booked:", formData);
-  };
-
-  const resetForm = () => {
-    setSubmitted(false);
-    setAppointmentData(null);
-  };
-
-  // If doctor not found
-  if (!doctor) {
-    return (
-      <Box className={`${styles.root} ${styles.green}`}>
-        <Box className={`${styles.main} ${styles.center}`}>
-          <Container maxWidth="lg">
-            <Typography
-              variant="h4"
-              className={`${styles.poppins} ${styles.center}`}
-            >
-              Doctor Not Found
-            </Typography>
-            <Box mt={2}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => navigate("/")}
-                className={styles.poppins}
-              >
-                Back to Doctors List
-              </Button>
-            </Box>
-          </Container>
-        </Box>
-      </Box>
-    );
-  }
-
-  return (
-    <Box className={`${styles.root} ${styles.green}`}>
-      <Box className={styles.main}>
-        <Container maxWidth="lg" sx={{ py: 4 }}>
-          <Button
-            variant="text"
-            onClick={() => navigate("/")}
-            className={styles.poppins}
-            sx={{ mb: 2 }}
-          >
-            &lt; Back to doctors list
-          </Button>
-
-          <Grid container spacing={3}>
-            {/* Doctor Info Section */}
-            <Grid item xs={12} md={4}>
-              <Paper
-                elevation={3}
-                className={styles.card}
-                sx={{ p: 2, height: "100%" }}
-              >
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                  }}
-                >
-                  <CardMedia
-                    component="img"
-                    image={doctor.img}
-                    alt={doctor.name}
-                    sx={{
-                      height: 200,
-                      width: 200,
-                      borderRadius: "50%",
-                      objectFit: "cover",
-                      mb: 2,
-                    }}
-                  />
-                  <Typography
-                    variant="h5"
-                    className={`${styles.bold} ${styles.poppins}`}
-                    gutterBottom
-                  >
-                    {doctor.name}
-                  </Typography>
-                  <Typography
-                    variant="subtitle1"
-                    className={styles.poppins}
-                    color="primary"
-                    gutterBottom
-                  >
-                    {doctor.specialty}
-                  </Typography>
-                  <Typography
-                    variant="body1"
-                    className={styles.poppins}
-                    align="center"
-                    paragraph
-                  >
-                    {doctor.description}
-                  </Typography>
-                  <Divider flexItem sx={{ my: 2 }} />
-
-                  {/* Doctor details */}
-                  <Box sx={{ width: "100%" }}>
-                    {[
-                      { label: "Education", value: doctor.education },
-                      { label: "Experience", value: doctor.experience },
-                      {
-                        label: "Available Days",
-                        value: doctor.availability.join(", "),
-                      },
-                      { label: "Contact", value: doctor.contact },
-                    ].map((item, index) => (
-                      <Box key={index} mb={index < 3 ? 2 : 0}>
-                        <Typography
-                          variant="subtitle2"
-                          className={`${styles.poppins} ${styles.bold}`}
-                        >
-                          {item.label}
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          className={styles.poppins}
-                          paragraph={index < 3}
-                        >
-                          {item.value}
-                        </Typography>
-                      </Box>
-                    ))}
-                  </Box>
-                </Box>
-              </Paper>
-            </Grid>
-
-            {/* Appointment Form Section */}
-            <Grid item xs={12} md={8}>
-              <Paper
-                elevation={3}
-                className={styles.card}
-                sx={{ p: 3, height: "100%" }}
-              >
-                <Typography
-                  variant="h5"
-                  className={`${styles.bold} ${styles.poppins}`}
-                  gutterBottom
-                >
-                  Book an Appointment
-                </Typography>
-
-                {!submitted ? (
-                  <AppointmentForm doctor={doctor} onSubmit={handleSubmit} />
-                ) : (
-                  <AppointmentConfirmation
-                    doctor={doctor}
-                    appointmentData={appointmentData}
-                    onReset={resetForm}
-                    onReturn={() => navigate("/")}
-                  />
-                )}
-              </Paper>
-            </Grid>
-          </Grid>
-        </Container>
-      </Box>
-    </Box>
-  );
-};
-
-// Not found page
-const NoMatch = () => {
-  const styles = useStyles();
-  const navigate = useNavigate();
-
-  return (
-    <Box className={`${styles.root} ${styles.green}`}>
-      <Box className={`${styles.main} ${styles.center}`}>
-        <Container maxWidth="lg">
-          <Typography
-            variant="h4"
-            className={`${styles.poppins} ${styles.center}`}
-            gutterBottom
-          >
-            Page Not Found
-          </Typography>
-          <Typography
-            variant="body1"
-            className={`${styles.poppins} ${styles.center}`}
-          >
-            Sorry, the page you are looking for does not exist.
-          </Typography>
-          <Box mt={2} className={styles.center}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => navigate("/")}
-              className={styles.poppins}
-            >
-              Go back to home
-            </Button>
-          </Box>
-        </Container>
-      </Box>
-    </Box>
-  );
-};
-
-// Main app component
-export default function AppointmentPage() {
-  return (
-    <Fade in={true} timeout={1500}>
-      <Box>
-        <Routes>
-          <Route path="/" element={<DoctorsList />} />
-          <Route path="/doctor/:id" element={<DoctorDetail />} />
-          <Route path="*" element={<NoMatch />} />
-        </Routes>
-      </Box>
-    </Fade>
-  );
-}
+export default DoctorsList;
