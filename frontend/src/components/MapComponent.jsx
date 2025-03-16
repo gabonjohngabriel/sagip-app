@@ -11,13 +11,15 @@ import {
 import Logo from "./Logo";
 import useStyles from "./Styles";
 import useMapStyles from "./MapStyles";
-import * as L from "leaflet";
+import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
-import "leaflet-providers";
 import "leaflet-routing-machine";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
 import "./Map.css";
+
+// Import leaflet-providers properly
+import "leaflet-providers";
 
 const MapComponent = () => {
   const mapRef = useRef(null);
@@ -171,14 +173,47 @@ const MapComponent = () => {
   useEffect(() => {
     console.log("mapRef.current:", mapRef.current);
     console.log("mapInstanceRef.current:", mapInstanceRef.current);
-    
+
     if (mapRef.current && !mapInstanceRef.current) {
       console.log("Initializing map...");
-      const map = L.map(mapRef.current).setView([12.8797, 121.774], 6);
+
+      // Create the map instance
+      const map = L.map(mapRef.current).setView([14.95, 120.75], 12);
       console.log("Map initialized:", map);
       mapInstanceRef.current = map;
-  
-      L.tileLayer.provider("CartoDB.Positron").addTo(map);
+
+      // Try to add tile layer with more robust error handling
+      try {
+        // Check if provider function is available
+        if (typeof L.tileLayer.provider === "function") {
+          L.tileLayer.provider("CartoDB.Positron").addTo(map);
+        } else {
+          console.warn(
+            "L.tileLayer.provider is not a function, using default tile layer"
+          );
+          L.tileLayer(
+            "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+            {
+              attribution:
+                '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+              subdomains: "abcd",
+              maxZoom: 20,
+            }
+          ).addTo(map);
+        }
+      } catch (error) {
+        console.error("Error using leaflet-providers:", error);
+        // Fallback to direct tile layer
+        L.tileLayer(
+          "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+          {
+            attribution:
+              '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            subdomains: "abcd",
+            maxZoom: 20,
+          }
+        ).addTo(map);
+      }
 
       // HOSPITAL ICON
       const hospitalIcon = L.icon({
@@ -558,13 +593,7 @@ const MapComponent = () => {
 
         // MARKERS
         map.routingControl = L.Routing.control({
-          waypoints: [
-            // CUR LOC
-            L.latLng(map.getCenter()),
-            // HOSPITAL LOC
-            L.latLng(lat, lng),
-          ],
-
+          waypoints: [L.latLng(map.getCenter()), L.latLng(lat, lng)],
           // LIMIT ONE MARKERS
           createMarker: function (i, waypoint, n) {
             if (i === 0) {
@@ -597,11 +626,9 @@ const MapComponent = () => {
               { color: "white", opacity: 0.7, weight: 5 },
             ],
           },
-
           routeWhileDragging: true,
           addWaypoints: false,
           autoRoute: false,
-          waypoints: [L.latLng(map.getCenter()), L.latLng(lat, lng)],
         }).addTo(map);
 
         // EXIT
@@ -617,16 +644,18 @@ const MapComponent = () => {
             map.removeControl(map.routingControl);
             map.removeControl(exitButton);
             function fadeOut(element) {
-              let opacity = 1;
-              const fade = setInterval(() => {
-                if (opacity <= 0) {
-                  clearInterval(fade);
-                  element.style.display = "none";
-                } else {
-                  opacity -= 0.1;
-                  element.style.opacity = opacity;
-                }
-              }, 50);
+              if (element && element.parentNode) {
+                let opacity = 1;
+                const fade = setInterval(() => {
+                  if (opacity <= 0) {
+                    clearInterval(fade);
+                    element.style.display = "none";
+                  } else {
+                    opacity -= 0.1;
+                    element.style.opacity = opacity;
+                  }
+                }, 50);
+              }
             }
             fadeOut(textDiv);
           };
@@ -808,7 +837,7 @@ const MapComponent = () => {
           .hospital-transport-info {
           border-bottom: 1px solid #eee;
           padding-bottom: 10px;
-           margin-bottom: 10px;
+          margin-bottom: 10px;
           }
 
           .emergency-button {

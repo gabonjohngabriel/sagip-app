@@ -5,10 +5,10 @@ import { io } from "socket.io-client";
 
 // Use a hardcoded BASE_URL instead of import.meta.env.MODE
 // For production, you might want to use window.location.origin or a specific URL
-const BASE_URL =
+const SOCKET_URL =
   process.env.NODE_ENV === "development"
-    ? "http://localhost:5173"
-    : "https://sagip-app.onrender.com";
+    ? "http://localhost:5002"  // Match your API server port
+    : "https://sagip-app.onrender.com";  // Or wherever your socket server is hosted
 
 export const useAuthStore = create((set, get) => ({
   authUser: null,
@@ -63,11 +63,19 @@ export const useAuthStore = create((set, get) => ({
       } 
       // Handle case where API returns user directly without nesting
       else if (res.data && res.data._id) {
-        // If API doesn't return token, this is an error but we're handling gracefully
-        console.warn("API response missing token, authentication may fail");
-        set({ authUser: res.data });
-      }
-      
+        // Look for token somewhere else in the response, or generate a default one for testing
+        const token = res.data.token || res.headers?.authorization?.split(' ')[1];
+        if (token) {
+          localStorage.setItem("token", token);
+          set({ 
+            authUser: res.data,
+            token: token
+          });
+        } else {
+          console.warn("API response missing token, authentication may fail");
+          set({ authUser: res.data });
+        }
+      }      
       toast.success("Logged in successfully");
       get().connectSocket();
       return { success: true };
@@ -107,16 +115,30 @@ export const useAuthStore = create((set, get) => ({
   connectSocket: () => {
     const { authUser } = get();
     if (!authUser || get().socket?.connected) return;
-
-    const socket = io(BASE_URL, {
+  
+    console.log("Attempting to connect socket for user:", authUser._id);
+  
+    const socket = io(SOCKET_URL, {
       query: {
         userId: authUser._id,
       },
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+    });    
+    
+    socket.on("connect", () => {
+      console.log("Socket connected successfully");
     });
+    
+    socket.on("connect_error", (error) => {
+      console.error("Socket connection error:", error);
+    });
+  
     socket.connect();
-
+  
     set({ socket: socket });
-
+  
     socket.on("getOnlineUsers", (userIds) => {
       set({ onlineUsers: userIds });
     });

@@ -1190,7 +1190,6 @@ const BillPage = () => {
                                       display: "flex",
                                       justifyContent: "space-between",
                                       alignContent: "center",
-                                      display: "inline-flex",
                                       mt: 1,
                                     }}
                                   >

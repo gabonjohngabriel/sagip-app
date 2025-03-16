@@ -24,6 +24,8 @@ const ChatPage = () => {
   const messageEndRef = useRef(null);
   const [messageText, setMessageText] = useState("");
   const [error, setError] = useState(null);
+  const [isDebug, setIsDebug] = useState(true);
+
 
   // STORE
   const {
@@ -44,34 +46,57 @@ const ChatPage = () => {
   
   const { socket, onlineUsers, authUser } = useAuthStore();
 
-  // FETCH USERS AND SET UP SOCKETS
-useEffect(() => {
-  let intervalId;
-
-  const fetchData = async () => {
-    try {
-      await getUsers();
-      if (socket) {
-        subscribeToMessages();
-
-        // Set up a periodic refresh of the users list
-        intervalId = setInterval(() => {
-          refreshUsersList();
-        }, 1000); // Refresh every 30 seconds
-      }
-    } catch (err) {
-      setError("Failed to connect. Please refresh the page.");
+  useEffect(() => {
+    // Debug logging
+    console.log("ChatPage mounted");
+    console.log("authUser:", authUser);
+    console.log("socket:", socket);
+    console.log("users:", users);
+    
+    // Check if the token exists
+    const token = localStorage.getItem("token");
+    console.log("Token exists:", !!token);
+    
+    if (!authUser) {
+      console.warn("No authenticated user found");
+      setError("Please log in to access the chat");
     }
-  };
-
-  fetchData();
-
-  return () => {
-    if (intervalId) clearInterval(intervalId);
-    if (socket) unsubscribeFromMessages();
-  };
-}, [socket]); 
+    
+    if (!socket && authUser) {
+      console.warn("Socket not initialized but user is authenticated");
+      // Try to connect the socket manually
+      useAuthStore.getState().connectSocket();
+    }
+  }, [authUser, socket, users]);
   
+  // FETCH USERS AND SET UP SOCKETS
+  useEffect(() => {
+    let intervalId;
+  
+    const fetchData = async () => {
+      try {
+        await getUsers();
+        if (socket) {
+          subscribeToMessages();
+  
+          // Set up a periodic refresh of the users list
+          intervalId = setInterval(() => {
+            refreshUsersList();
+          }, 1000); // Refresh every 30 seconds
+        }
+      } catch (err) {
+        setError("Failed to connect. Please refresh the page.");
+      }
+    };
+  
+    fetchData();
+  
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+      if (socket) unsubscribeFromMessages();
+    };
+  }, [socket]);
+    
   // When user is selected, clear unread count
   useEffect(() => {
     if (selectedUser) {
@@ -158,7 +183,6 @@ useEffect(() => {
       {/* MAIN */}
       <Box
         sx={{
-          width: "100%",
           height: "75vh",
           display: "flex",
           bgcolor: "#fff",
