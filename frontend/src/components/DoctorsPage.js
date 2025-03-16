@@ -900,7 +900,7 @@ const DoctorsList = () => {
   return (
     <Box
       sx={{ minHeight: "100vh" }}
-      className={`${styles.root} ${styles.center2} ${styles.green}`}
+      className={`${styles.root} ${styles.backgroundGreenTheme} ${styles.center2} ${styles.white}`}
     >
       <Fade in={true} timeout={1000}>
         <Container

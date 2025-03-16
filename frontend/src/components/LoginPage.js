@@ -69,7 +69,9 @@ const LoginPage = () => {
             gap: 1
           }}>
             <Logo/>
-            <Typography variant="h6" fontWeight="bold">
+            <Typography 
+            className={`${styles.poppins}`}
+            variant="h6" fontWeight="bold">
               SAGIP
             </Typography>
           </Box>

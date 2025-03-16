@@ -8,7 +8,7 @@ import { io } from "socket.io-client";
 const BASE_URL =
   process.env.NODE_ENV === "development"
     ? "http://localhost:5173"
-    : "https://gabonjohngabriel.github.io/";
+    : "https://sagip-app.onrender.com";
 
 export const useAuthStore = create((set, get) => ({
   authUser: null,

@@ -6,6 +6,7 @@ import TouchAppIcon from "@mui/icons-material/TouchApp";
 import useStyles from "./Styles";
 import Logo from "./Logo";
 import { useNavigate } from "react-router-dom";
+import BackgroundPage from "./styles/BackgroundPage";
 
 export default function Menu() {
   const styles = useStyles();
@@ -26,7 +27,6 @@ export default function Menu() {
     const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 500);
     camera.position.z = 5;
     
-    // Renderer setup
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(width, height);
     renderer.setPixelRatio(window.devicePixelRatio);
@@ -171,8 +171,8 @@ export default function Menu() {
       <div style={{ opacity: animationComplete ? 1 : 0, transition: 'opacity 0.3s ease' }}>
         <Card>
           <CardActionArea onClick={() => navigate("/choose")}>
-            <Box className={`${styles.root} ${styles.green}`}>
-              <Box className={`${styles.main} ${styles.center} ${styles.poppins}`}>
+            <Box className={`${styles.root} ${styles.backgroundGreenTheme}`}>
+              <Box className={`${styles.main} ${styles.white} ${styles.center} ${styles.poppins}`}>
                 <Typography component="h6" variant="h6">
                   SAGIP APP
                 </Typography>
@@ -198,7 +198,7 @@ export default function Menu() {
                 </Typography>
               </Box>
             </Box>
-            <Box className={`${styles.main2} ${styles.center} ${styles.darkgreen}`}>
+            <Box className={`${styles.main2} ${styles.center}`}>
               <Logo large />
             </Box>
           </CardActionArea>

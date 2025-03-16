@@ -276,7 +276,7 @@ const AppointmentForm = () => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Box className={`${styles.root} ${styles.center2} ${styles.green}`}>
+      <Box className={`${styles.root} ${styles.backgroundGreenTheme} ${styles.center2} ${styles.white}`}>
         <Fade in={true} timeout={1000}>
           <Container
             className={`${styles.cardsContainer}`}

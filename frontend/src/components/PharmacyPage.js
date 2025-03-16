@@ -281,7 +281,7 @@ export default function PharmacyPage() {
 
   return (
     <Box
-      className={`${styles.root} ${styles.whitebg} ${styles.cardsContainer}`}
+      className={`${styles.root} ${styles.backgroundGreenTheme} ${styles.cardsContainer}`}
       sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
     >
       <Fade in={true} timeout={1000}>
@@ -687,7 +687,9 @@ export default function PharmacyPage() {
                 className={`${styles.poppins} ${styles.bold}`}
                 variant="h5"
                 component="h2"
-                sx={{ letterSpacing: -1 }}
+                sx={{ letterSpacing: -0.5, 
+                  color: "#fff"
+                }}
               >
                 April's best deals for your clinic!
               </Typography>

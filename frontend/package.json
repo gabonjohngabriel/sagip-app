@@ -59,7 +59,7 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
     "server": "nodemon --watch server.js --exec node server.js",
-    "start": "react-scripts start",
+    "start": "set PORT=5173 && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",

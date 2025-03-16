@@ -55,8 +55,8 @@ const ChooseMap = () => {
 
   return (
     <Box
-      className={`${styles.root}`}
-      sx={{ bgcolor: "#ffffff", minHeight: "100vh" }}
+      className={`${styles.root} ${styles.backgroundGreenTheme}`}
+      sx={{ minHeight: "100vh" }}
     >
       {/* HEADER from PharmacyPage.js */}
       <AppBar
@@ -286,7 +286,7 @@ const ChooseMap = () => {
         </Box>
       </Box>
 
-      {/* CONTENT from MapPage.js */}
+      {/* CONTENT */}
       <Fade in={true} timeout={1000}>
         <Container maxWidth="lg" sx={{ py: 4 }}>
           <Box sx={{ mb: 4 }}>
@@ -295,7 +295,7 @@ const ChooseMap = () => {
               className={`${styles.poppins} ${styles.bold}`}
               sx={{
                 mt: 2,
-                color: "#333",
+                color: "#fff",
                 maxWidth: "400px",
               }}
             >
@@ -307,7 +307,7 @@ const ChooseMap = () => {
               sx={{
                 mt: 1,
                 mb: 4,
-                color: "#666",
+                color: "#ffffff",
                 maxWidth: "600px",
               }}
             >

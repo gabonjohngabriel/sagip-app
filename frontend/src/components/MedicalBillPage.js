@@ -303,7 +303,7 @@ const BillPage = () => {
   return (
     <ThemeProvider theme={theme}>
       <Box
-        className={`${styles.root} ${styles.center}`}
+      className={`${styles.root} ${styles.backgroundGreenTheme} ${styles.center} ${styles.white}`}
         sx={{ bgcolor: "#f9f9f9", minHeight: "100vh", py: 2 }}
       >
         {/* HEADER */}
@@ -536,7 +536,9 @@ const BillPage = () => {
 
         {showConfetti && <Confetti />}
         <Fade in={true} timeout={1000}>
-          <Box className={`${styles.cardsContainer}`}>
+          <Box 
+          sx={{mt: 2}}
+          className={`${styles.cardsContainer}`}>
             <Container maxWidth="xl">
               <Paper
                 elevation={0}

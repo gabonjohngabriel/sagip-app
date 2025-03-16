@@ -3,6 +3,7 @@ import { Box, Typography, Container, Grid, Card, CardActionArea, CardMedia, Card
 import Logo from "./Logo";
 import { useNavigate } from "react-router-dom";
 import useStyles from "./Styles";
+import BackgroundPage from "./styles/BackgroundPage";
 import { useAuthStore } from "./store/useAuthStore";
 
 export default function ChooseMenu() {
@@ -51,7 +52,7 @@ export default function ChooseMenu() {
 
   return (
     <Box 
-    className={`${styles.root} ${styles.center2}`}
+    className={`${styles.root} ${styles.backgroundGreenTheme} ${styles.center2}`}
     sx={{ 
       minHeight: "100vh", 
     bgcolor: "#208a3c" }}>

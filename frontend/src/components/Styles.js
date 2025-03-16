@@ -83,18 +83,23 @@ const useStyles = makeStyles((theme) => ({
   italic: {
     fontStyle: "italic !important",
   },
+  // BACKGROUND
+  backgroundGreenTheme: {
+    background: "radial-gradient(circle at top left,rgb(12, 247, 129), transparent 70%), radial-gradient(circle at bottom right,rgb(36, 119, 64), transparent 70%), radial-gradient(circle at center, #40c057, transparent 50%), linear-gradient(135deg, #208a3c, #0f5a26)",
+  },
+  // COLORS
   green: {
     backgroundColor: "#208a3c !important",
     color: "white !important",
-  },
-  darkgreen: {
-    backgroundColor: "#136e2c !important",
   },
   greenBorder: {
     borderColor: "#136e2c !important",
   },
   greenText: {
     color: "#136e2c !important",
+  },
+  darkgreen: {
+    backgroundColor: "#136e2c !important",
   },
   white: {
     color: "#ffffff !important",
