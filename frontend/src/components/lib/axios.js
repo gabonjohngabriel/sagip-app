@@ -1,6 +1,8 @@
 // In axios.js
 import axios from "axios";
 
+// DO NOT import useAuthStore directly here
+
 const API_URL = process.env.NODE_ENV === "development"
   ? "http://localhost:5002/api"
   : "https://sagip-app.onrender.com/api";
@@ -38,7 +40,6 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-// Enhanced error handling
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -54,25 +55,35 @@ axiosInstance.interceptors.response.use(
     
     // Handle authentication errors
     if (error.response?.status === 401) {
-      console.warn("Authentication error detected. Checking token validity...");
-      // Attempt to refresh or validate token
-      // If not possible, clear token and redirect to login
+      console.warn("Authentication error detected");
+      
+      // Instead of direct reference, use a dynamic import
       if (!error.config?._isRetry) {
-        return useAuthStore.getState().checkTokenExpiration()
+        // Import the store dynamically to avoid circular dependency
+        const getAuthStore = () => {
+          return import('../store/useAuthStore').then(module => module.useAuthStore);
+        };
+        
+        return getAuthStore()
+          .then(useAuthStore => useAuthStore.getState().checkTokenExpiration())
           .then(isValid => {
             if (isValid) {
               // Token is still valid, retry the request
               error.config._isRetry = true;
               return axiosInstance(error.config);
             } else {
-              // Token is invalid, clear it and let the error propagate
+              // Token is invalid, clear it
               localStorage.removeItem("token");
-              useAuthStore.getState().logout(true); // Silent logout
-              return Promise.reject(error);
+              // Import and use the store again
+              return import('../store/useAuthStore')
+                .then(module => {
+                  module.useAuthStore.getState().logout(true); // Silent logout
+                  return Promise.reject(error);
+                });
             }
           })
           .catch(() => {
-            // Error in validation, clear token and let the error propagate
+            // Error in validation, clear token
             localStorage.removeItem("token");
             return Promise.reject(error);
           });
