@@ -14,20 +14,20 @@ export const useChatStore = create((set, get) => ({
   getUsers: async () => {
     const token = localStorage.getItem("token");
     const authUser = useAuthStore.getState().authUser;
-  
+
     if (!token || !authUser) {
       console.warn("⚠ No token or user found! Redirecting to login...");
       return;
     }
-  
+
     set({ isUsersLoading: true });
-  
+
     try {
       // If using temporary token, append user ID to URL
-      const url = token.startsWith('temp_') 
-        ? `/messages/users?userId=${authUser._id}` 
+      const url = token.startsWith("temp_")
+        ? `/messages/users?userId=${authUser._id}`
         : "/messages/users";
-      
+
       const res = await axiosInstance.get(url);
       set({ users: res.data });
     } catch (error) {
@@ -37,7 +37,7 @@ export const useChatStore = create((set, get) => ({
       set({ isUsersLoading: false });
     }
   },
-    
+
   getMessages: async (userId) => {
     set({ isMessagesLoading: true });
     try {
@@ -205,34 +205,34 @@ export const useChatStore = create((set, get) => ({
   // REFRESH
   refreshUsersList: async () => {
     const token = localStorage.getItem("token");
-    const authUser = useAuthStore.getState().authUser;
-  
-    if (!token || !authUser) {
-      console.warn("⚠ Cannot refresh users: No token or user found");
+
+    // Don't rely on authUser from store initially to avoid circular reference
+    let userId = null;
+
+    if (token && token.startsWith("temp_")) {
+      userId = token.split("_")[1];
+    } else if (useAuthStore.getState().authUser) {
+      userId = useAuthStore.getState().authUser._id;
+    }
+
+    if (!token) {
+      console.warn("⚠ Cannot refresh users: No token found");
       return { success: false };
     }
-  
+
     try {
-      // Try standard endpoint first
-      try {
-        const res = await axiosInstance.get("/messages/users");
-        set({ users: res.data });
-        return { success: true };
-      } catch (error) {
-        // If standard endpoint fails and we have a temp token, try with userId
-        if (token.startsWith('temp_')) {
-          const userId = authUser._id;
-          
-          const res = await axiosInstance.get(`/messages/users?userId=${userId}`);
-          set({ users: res.data });
-          return { success: true };
-        } else {
-          throw error; // Re-throw original error
-        }
+      let url = "/messages/users";
+      // If using temp token, always include userId in query
+      if (userId && token.startsWith("temp_")) {
+        url = `/messages/users?userId=${userId}`;
       }
+
+      const res = await axiosInstance.get(url);
+      set({ users: res.data });
+      return { success: true };
     } catch (error) {
       console.error("Failed to refresh users list:", error);
       return { success: false, error: error.message };
     }
-  }
-  }));
+  },
+}));

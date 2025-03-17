@@ -38,7 +38,7 @@ export const useAuthStore = create((set, get) => ({
         return { success: true };
       } catch (error) {
         // If standard check fails and we have a temp token, try that approach
-        if (token.startsWith('temp_')) {
+        if (token && token.startsWith('temp_')) {
           const userId = token.split('_')[1];
           
           try {
@@ -69,7 +69,7 @@ export const useAuthStore = create((set, get) => ({
       set({ isCheckingAuth: false });
     }
   },
-      
+        
   signup: async (data) => {
     set({ isSigningUp: true });
     try {

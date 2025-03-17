@@ -93,10 +93,14 @@ const ChatPage = () => {
   
           // Set up a periodic refresh of the users list
           intervalId = setInterval(() => {
-            refreshUsersList();
-          }, 1000); // Refresh every 30 seconds
+            refreshUsersList().catch(err => {
+              console.error("Error in refresh interval:", err);
+              // Don't set error here to avoid too many notifications
+            });
+          }, 30000); // Change to 30 seconds instead of 1 second to reduce load
         }
       } catch (err) {
+        console.error("Failed to connect:", err);
         setError("Failed to connect. Please refresh the page.");
       }
     };
@@ -108,7 +112,7 @@ const ChatPage = () => {
       if (socket) unsubscribeFromMessages();
     };
   }, [socket]);
-    
+        
   // When user is selected, clear unread count
   useEffect(() => {
     if (selectedUser) {
