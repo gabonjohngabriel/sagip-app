@@ -4,13 +4,13 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
+  base: './',
   define: {
-    // For libraries that might still use process.env
     'process.env': {},
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      '@': path.resolve(__dirname, './dist'),
     },
   },
   server: {
