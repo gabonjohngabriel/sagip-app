@@ -23,29 +23,27 @@ const LoginPage = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const { login, isLoggingIn } = useAuthStore();
 
-  const handleLogin = async (formData) => {
-    const result = await login(formData);
-    if (result.success) {
-      navigate("/choose/chat");
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      // In useAuthStore.js, login() returns the response data
+      // Validate form data
+      if (!formData.email || !formData.password) {
+        throw new Error("Please enter both email and password");
+      }
+      
+      console.log("Attempting login with:", formData.email);
       const response = await login(formData);
 
-      // Only navigate if login was successful
-      if (response) {
-        console.log("Login Successful:", response);
+      if (response.success) {
+        console.log("Login successful, navigating to chat");
         navigate("/choose/chat");
+      } else {
+        console.error("Login failed:", response.error);
       }
     } catch (error) {
-      console.error("Login Failed:", error);
-      // Error handling is already done in the useAuthStore login function
-      // which shows toast notifications
+      console.error("Login error:", error);
+      // Error handling is done in the useAuthStore login function
     }
   };
 
@@ -95,7 +93,7 @@ const LoginPage = () => {
           <Typography
             className={`${styles.poppins} ${styles.bold}`}
             variant="h2"
-            etterSpacing={-1}
+            letterSpacing={-1}
             sx={{ mb: 1 }}
           >
             SAGIP APP
