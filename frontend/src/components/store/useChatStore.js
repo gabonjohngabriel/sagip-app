@@ -28,7 +28,11 @@ export const useChatStore = create((set, get) => ({
         ? `/messages/users?userId=${authUser._id}`
         : "/messages/users";
 
-      const res = await axiosInstance.get(url);
+      const res = await axiosInstance.get(url, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       set({ users: res.data });
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -41,7 +45,11 @@ export const useChatStore = create((set, get) => ({
   getMessages: async (userId) => {
     set({ isMessagesLoading: true });
     try {
-      const res = await axiosInstance.get(`/messages/${userId}`);
+      const res = await axiosInstance.get(`/messages/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       set({ messages: res.data });
     } catch (error) {
       toast.error(error.response.data.message);
@@ -71,7 +79,12 @@ export const useChatStore = create((set, get) => ({
       // SEND TO SERVER
       const res = await axiosInstance.post(
         `/messages/send/${selectedUser._id}`,
-        messageData
+        messageData,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
       );
 
       // Replace optimistic message with real one
@@ -227,7 +240,11 @@ export const useChatStore = create((set, get) => ({
         url = `/messages/users?userId=${userId}`;
       }
 
-      const res = await axiosInstance.get(url);
+      const res = await axiosInstance.get(url, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       set({ users: res.data });
       return { success: true };
     } catch (error) {
