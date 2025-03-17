@@ -30,26 +30,35 @@ export const useAuthStore = create((set, get) => ({
         return { success: false, error: "No token found" };
       }
       
-      // If using our temporary token workaround
-      if (token.startsWith('temp_')) {
-        const userId = token.split('_')[1];
-        
-        // Fetch user data directly instead of using auth/check
-        const res = await axiosInstance.get(`/users/${userId}`);
-        
-        if (res.data && res.data._id) {
-          set({ authUser: res.data });
-          get().connectSocket();
-          return { success: true };
-        } else {
-          throw new Error("Failed to fetch user data");
-        }
-      } else {
-        // Standard token flow
+      // Try standard token check first
+      try {
         const res = await axiosInstance.get("/auth/check");
         set({ authUser: res.data });
         get().connectSocket();
         return { success: true };
+      } catch (error) {
+        // If standard check fails and we have a temp token, try that approach
+        if (token.startsWith('temp_')) {
+          const userId = token.split('_')[1];
+          
+          try {
+            // Fetch user data directly instead of using auth/check
+            const res = await axiosInstance.get(`/users/${userId}`);
+            
+            if (res.data && res.data._id) {
+              set({ authUser: res.data });
+              get().connectSocket();
+              return { success: true };
+            } else {
+              throw new Error("Failed to fetch user data");
+            }
+          } catch (tempError) {
+            console.error("Temp token approach failed:", tempError);
+            throw tempError; // Re-throw to be caught by outer catch
+          }
+        } else {
+          throw error; // Re-throw original error
+        }
       }
     } catch (error) {
       console.error("Error in checkAuth:", error);
@@ -60,7 +69,7 @@ export const useAuthStore = create((set, get) => ({
       set({ isCheckingAuth: false });
     }
   },
-  
+      
   signup: async (data) => {
     set({ isSigningUp: true });
     try {
@@ -123,21 +132,25 @@ export const useAuthStore = create((set, get) => ({
     }
   },
     
-  logout: async () => {
+  logout: async (silent = false) => {
     try {
       await axiosInstance.post("/auth/logout");
       localStorage.removeItem("token");
       set({ authUser: null });
-      toast.success("Logged out successfully");
+      if (!silent) {
+        toast.success("Logged out successfully");
+      }
       get().disconnectSocket();
     } catch (error) {
       console.error("Logout error:", error);
       localStorage.removeItem("token");
       set({ authUser: null });
-      toast.error(error.response?.data?.message || "Error during logout");
+      if (!silent) {
+        toast.error(error.response?.data?.message || "Error during logout");
+      }
     }
   },
-
+  
   updateProfile: async (data) => {
     set({ isUpdatingProfile: true });
     try {
@@ -164,19 +177,27 @@ export const useAuthStore = create((set, get) => ({
   
     try {
       const token = localStorage.getItem("token");
+      if (!token) {
+        console.warn("Cannot connect socket: No token found");
+        return;
+      }
       
-      const socket = io(SOCKET_URL, {
+      const socketOptions = {
         query: {
           userId: authUser._id,
-          // Don't send the temporary token to the server
-          // as it might reject it
-          token: token.startsWith('temp_') ? undefined : token
         },
         reconnection: true,
         reconnectionAttempts: 5,
         reconnectionDelay: 1000,
         transports: ["websocket", "polling"],
-      });
+      };
+      
+      // Add token to query if it's not a temp token
+      if (!token.startsWith('temp_')) {
+        socketOptions.query.token = token;
+      }
+      
+      const socket = io(SOCKET_URL, socketOptions);
     
       socket.on("connect", () => {
         console.log("Socket connected successfully");
@@ -186,8 +207,14 @@ export const useAuthStore = create((set, get) => ({
         console.error("Socket connection error:", error);
         // If connection fails due to authentication, clear token
         if (error.message?.includes("authentication")) {
-          localStorage.removeItem("token");
-          set({ authUser: null });
+          console.warn("Socket authentication error. Checking token validity...");
+          get().checkTokenExpiration()
+            .then(isValid => {
+              if (!isValid) {
+                localStorage.removeItem("token");
+                set({ authUser: null });
+              }
+            });
         }
       });
   
@@ -208,8 +235,8 @@ export const useAuthStore = create((set, get) => ({
     } catch (err) {
       console.error("Error initializing socket:", err);
     }
-  },  
-  
+  },
+    
   disconnectSocket: () => {
     const socket = get().socket;
     if (socket) {
@@ -218,24 +245,36 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
-  checkTokenExpiration: () => {
+  checkTokenExpiration: async () => {
     const token = localStorage.getItem("token");
     if (!token) return false;
     
     try {
-      // If you're using JWT, you could decode it here to check expiration
-      // For simple implementation, we'll just verify with the server
-      return axiosInstance.get("/auth/check-token")
-        .then(() => true)
-        .catch(() => {
-          // Token invalid or expired
+      // Try the standard token check endpoint
+      await axiosInstance.get("/auth/check-token");
+      return true;
+    } catch (error) {
+      // If standard check fails and we have a temp token, try that approach
+      if (token.startsWith('temp_')) {
+        const userId = token.split('_')[1];
+        
+        try {
+          // Check if we can still access user data
+          const res = await axiosInstance.get(`/users/${userId}`);
+          return !!(res.data && res.data._id);
+        } catch (tempError) {
+          console.error("Temp token validation failed:", tempError);
           localStorage.removeItem("token");
           set({ authUser: null });
           return false;
-        });
-    } catch (error) {
-      return false;
+        }
+      } else {
+        // Standard token is invalid
+        localStorage.removeItem("token");
+        set({ authUser: null });
+        return false;
+      }
     }
-  }
+  }  
   
 }));

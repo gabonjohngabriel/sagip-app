@@ -204,11 +204,35 @@ export const useChatStore = create((set, get) => ({
 
   // REFRESH
   refreshUsersList: async () => {
+    const token = localStorage.getItem("token");
+    const authUser = useAuthStore.getState().authUser;
+  
+    if (!token || !authUser) {
+      console.warn("⚠ Cannot refresh users: No token or user found");
+      return { success: false };
+    }
+  
     try {
-      const res = await axiosInstance.get("/messages/users");
-      set({ users: res.data });
+      // Try standard endpoint first
+      try {
+        const res = await axiosInstance.get("/messages/users");
+        set({ users: res.data });
+        return { success: true };
+      } catch (error) {
+        // If standard endpoint fails and we have a temp token, try with userId
+        if (token.startsWith('temp_')) {
+          const userId = authUser._id;
+          
+          const res = await axiosInstance.get(`/messages/users?userId=${userId}`);
+          set({ users: res.data });
+          return { success: true };
+        } else {
+          throw error; // Re-throw original error
+        }
+      }
     } catch (error) {
       console.error("Failed to refresh users list:", error);
+      return { success: false, error: error.message };
     }
-  },
-}));
+  }
+  }));
