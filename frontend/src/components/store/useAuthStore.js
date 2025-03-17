@@ -71,10 +71,15 @@ export const useAuthStore = create((set, get) => ({
     try {
       const res = await axiosInstance.post("/auth/login", data);
       console.log("Login response:", res.data);
-
+      
+      // Debug: Log the full response structure
       console.log("Full response structure:", JSON.stringify(res.data, null, 2));
-        
+      
       // Handle various response formats
+      let token = null;
+      let user = null;
+      
+      // Check different possible token locations
       if (res.data.token) {
         token = res.data.token;
         user = res.data.user || res.data;
@@ -100,24 +105,17 @@ export const useAuthStore = create((set, get) => ({
         }
       }
       
+      // For this specific case - server returns user info but no token
+      // Use user ID as a "token" (this is a workaround)
+      if (!token && res.data._id) {
+        console.log("No token found, using user ID as token");
+        token = `uid_${res.data._id}`;
+        user = res.data;
+      }
+      
       if (!token) {
         console.error("Token not found in response:", res.data);
-        
-        // If API doesn't return a token but returns a success message,
-        // we might need to use the response from the check endpoint
-        if (res.data.success || res.data.message === "Login successful") {
-          try {
-            const checkRes = await axiosInstance.get("/auth/check");
-            user = checkRes.data;
-            // Use a custom token if the server doesn't provide one
-            token = "authenticated-" + new Date().getTime();
-          } catch (checkError) {
-            console.error("Failed to get user data after login:", checkError);
-            throw new Error("Authentication failed after login");
-          }
-        } else {
-          throw new Error("No token received from server");
-        }
+        throw new Error("No token received from server");
       }
       
       // Store token and user data

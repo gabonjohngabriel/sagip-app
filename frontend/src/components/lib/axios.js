@@ -12,7 +12,6 @@ export const axiosInstance = axios.create({
   withCredentials: true,
 });
 
-// Add request interceptor to attach token to all requests
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -21,8 +20,15 @@ axiosInstance.interceptors.request.use(
     console.log("Using token for request:", token ? "Token exists" : "No token");
     
     if (token) {
-      // Make sure to use the correct authorization header format
-      config.headers.Authorization = `Bearer ${token}`;
+      // Check if it's our custom user ID token
+      if (token.startsWith('uid_')) {
+        // For custom token, use the user ID directly in headers
+        const userId = token.replace('uid_', '');
+        config.headers['X-User-Id'] = userId;
+      } else {
+        // Use standard bearer token format
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
     return config;
   },
