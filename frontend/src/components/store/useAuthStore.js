@@ -6,9 +6,10 @@ import { io } from "socket.io-client";
 // Use a hardcoded BASE_URL instead of import.meta.env.MODE
 // For production, you might want to use window.location.origin or a specific URL
 const SOCKET_URL =
-  process.env.NODE_ENV === "development"
-    ? "http://localhost:5002"  // Match your API server port
-    : "https://sagip-app.onrender.com";  // Or wherever your socket server is hosted
+  process.env.NODE_ENV === "development" ||
+  window.location.hostname === "localhost"
+    ? "http://localhost:5002"
+    : "https://sagip-app.onrender.com";
 
 export const useAuthStore = create((set, get) => ({
   authUser: null,
@@ -52,41 +53,41 @@ export const useAuthStore = create((set, get) => ({
     set({ isLoggingIn: true });
     try {
       const res = await axiosInstance.post("/auth/login", data);
-      
-      // Check if token exists in the expected format
-      if (res.data && res.data.token) {
-        localStorage.setItem("token", res.data.token);
-        set({ 
-          authUser: res.data.user || res.data, // Handle both formats
-          token: res.data.token 
+
+      // Simplified token extraction and storage
+      const token =
+        res.data.token ||
+        (res.data.user && res.data.user.token) ||
+        res.headers?.authorization?.split(" ")[1];
+
+      if (token) {
+        localStorage.setItem("token", token);
+        // Store user data consistently
+        const userData = res.data.user || res.data;
+        set({
+          authUser: userData,
+          token: token,
         });
-      } 
-      // Handle case where API returns user directly without nesting
-      else if (res.data && res.data._id) {
-        // Look for token somewhere else in the response, or generate a default one for testing
-        const token = res.data.token || res.headers?.authorization?.split(' ')[1];
-        if (token) {
-          localStorage.setItem("token", token);
-          set({ 
-            authUser: res.data,
-            token: token
-          });
-        } else {
-          console.warn("API response missing token, authentication may fail");
-          set({ authUser: res.data });
-        }
-      }      
-      toast.success("Logged in successfully");
-      get().connectSocket();
-      return { success: true };
+
+        toast.success("Logged in successfully");
+        get().connectSocket();
+        return { success: true };
+      } else {
+        throw new Error("No token received from server");
+      }
     } catch (error) {
-      toast.error(error.response?.data?.message || "Login failed");
-      return { success: false, error: error.response?.data?.message };
+      toast.error(
+        error.response?.data?.message || error.message || "Login failed"
+      );
+      return {
+        success: false,
+        error: error.response?.data?.message || error.message,
+      };
     } finally {
       set({ isLoggingIn: false });
     }
   },
-  
+
   logout: async () => {
     try {
       await axiosInstance.post("/auth/logout");
@@ -115,33 +116,43 @@ export const useAuthStore = create((set, get) => ({
   connectSocket: () => {
     const { authUser } = get();
     if (!authUser || get().socket?.connected) return;
-  
+
     console.log("Attempting to connect socket for user:", authUser._id);
-  
-    const socket = io(SOCKET_URL, {
-      query: {
-        userId: authUser._id,
-      },
-      reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
-    });    
-    
-    socket.on("connect", () => {
-      console.log("Socket connected successfully");
-    });
-    
-    socket.on("connect_error", (error) => {
-      console.error("Socket connection error:", error);
-    });
-  
-    socket.connect();
-  
-    set({ socket: socket });
-  
-    socket.on("getOnlineUsers", (userIds) => {
-      set({ onlineUsers: userIds });
-    });
+
+    // Make sure we have a valid SOCKET_URL
+    if (!SOCKET_URL) {
+      console.error("Socket URL is missing or invalid");
+      return;
+    }
+
+    try {
+      const socket = io(SOCKET_URL, {
+        query: {
+          userId: authUser._id,
+        },
+        reconnection: true,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000,
+        transports: ["websocket", "polling"], // Try websocket first, fallback to polling
+      });
+
+      socket.on("connect", () => {
+        console.log("Socket connected successfully");
+      });
+
+      socket.on("connect_error", (error) => {
+        console.error("Socket connection error:", error);
+      });
+
+      socket.connect();
+      set({ socket: socket });
+
+      socket.on("getOnlineUsers", (userIds) => {
+        set({ onlineUsers: userIds });
+      });
+    } catch (err) {
+      console.error("Error initializing socket:", err);
+    }
   },
 
   disconnectSocket: () => {

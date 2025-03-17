@@ -67,11 +67,17 @@ function App() {
 
   useEffect(() => {
     try {
-      checkAuth();
+      console.log("Checking authentication...");
+      const token = localStorage.getItem("token");
+      console.log("Found token in storage:", !!token);
+      
+      checkAuth().then(() => {
+        console.log("Auth check completed, user:", authUser ? "authenticated" : "not authenticated");
+      });
     } catch (error) {
       console.error("Auth check failed:", error);
     }
-  }, [checkAuth]);
+  }, [checkAuth]);  
 
   const MapPage = () => <PlaceholderComponent name="MapPage" />;
   const PaymentSelectionDialog = () => <PlaceholderComponent name="Payment" />;
