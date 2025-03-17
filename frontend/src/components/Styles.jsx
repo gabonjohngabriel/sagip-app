@@ -85,12 +85,10 @@ const useStyles = makeStyles((theme) => ({
   },
   // BACKGROUND
   backgroundGreenTheme: {
-    backgroundGreenTheme: {
-      background: `radial-gradient(circle at top left, #b0f2b6, transparent 60%),
+      background: `radial-gradient(circle at top left,rgb(5, 146, 17), transparent 60%),
                    radial-gradient(circle at bottom right, #4caf50, transparent 60%),
-                   linear-gradient(to bottom, #a8e063, #56ab2f)`,
-    },
-  },
+                   linear-gradient(to bottom,rgb(99, 224, 147),rgb(22, 179, 74))`,
+ },
   // COLORS
   green: {
     backgroundColor: "#208a3c !important",
