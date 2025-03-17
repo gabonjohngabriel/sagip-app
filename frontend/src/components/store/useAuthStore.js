@@ -5,11 +5,9 @@ import { io } from "socket.io-client";
 
 // Use a hardcoded BASE_URL instead of import.meta.env.MODE
 // For production, you might want to use window.location.origin or a specific URL
-const SOCKET_URL =
-  process.env.NODE_ENV === "development" ||
-  window.location.hostname === "localhost"
-    ? "http://localhost:5002"
-    : "https://sagip-app.onrender.com";
+const API_URL = process.env.NODE_ENV === "development"
+  ? "http://localhost:5002/api"
+  : "https://sagip-app.onrender.com/api";
 
 export const useAuthStore = create((set, get) => ({
   authUser: null,
@@ -49,33 +47,33 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
-  login: async (data) => {
-    set({ isLoggingIn: true });
-    try {
-      const res = await axiosInstance.post("/auth/login", data);
+login: async (data) => {
+  set({ isLoggingIn: true });
+  try {
+    const res = await axiosInstance.post("/auth/login", data);
+    console.log("Full login response:", res);
+    console.log("Response data:", res.data);
+    console.log("Response headers:", res.headers);
 
-      // Simplified token extraction and storage
-      const token =
-        res.data.token ||
-        (res.data.user && res.data.user.token) ||
-        res.headers?.authorization?.split(" ")[1];
+    // If you know exactly where the token should be, use that directly
+    const token = res.data.token; // Or whatever the correct path is
+    
+    if (token) {
+      localStorage.setItem("token", token);
+      set({
+        authUser: res.data.user || res.data,
+        token: token,
+      });
+      
+      toast.success("Logged in successfully");
+      get().connectSocket();
+      return { success: true };
+    } else {
+      console.error("Token not found in response:", res);
+      throw new Error("No token received from server");
+    }
+  } catch (error) {
 
-      if (token) {
-        localStorage.setItem("token", token);
-        // Store user data consistently
-        const userData = res.data.user || res.data;
-        set({
-          authUser: userData,
-          token: token,
-        });
-
-        toast.success("Logged in successfully");
-        get().connectSocket();
-        return { success: true };
-      } else {
-        throw new Error("No token received from server");
-      }
-    } catch (error) {
       toast.error(
         error.response?.data?.message || error.message || "Login failed"
       );
