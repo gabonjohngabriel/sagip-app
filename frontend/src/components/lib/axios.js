@@ -61,7 +61,7 @@ axiosInstance.interceptors.response.use(
       if (!error.config?._isRetry) {
         // Import the store dynamically to avoid circular dependency
         const getAuthStore = () => {
-          return import('./useAuthStore').then(module => module.useAuthStore);
+          return import('../store/useAuthStore').then(module => module.useAuthStore);
         };
         
         return getAuthStore()
@@ -75,7 +75,7 @@ axiosInstance.interceptors.response.use(
               // Token is invalid, clear it
               localStorage.removeItem("token");
               // Import and use the store again
-              return import('./useAuthStore')
+              return import('../store/useAuthStore')
                 .then(module => {
                   module.useAuthStore.getState().logout(true); // Silent logout
                   return Promise.reject(error);
