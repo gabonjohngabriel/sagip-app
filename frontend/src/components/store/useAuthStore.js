@@ -101,27 +101,14 @@ export const useAuthStore = create((set, get) => ({
         return { success: true };
       } 
       else if (res.data && res.data._id) {
-        // Server returned user but no token - create a token request
-        const tokenRes = await axiosInstance.post("/auth/generate-token", {
-          userId: res.data._id
-        });
-        
-        if (tokenRes.data && tokenRes.data.token) {
-          localStorage.setItem("token", tokenRes.data.token);
-          set({ authUser: res.data });
-          toast.success("Logged in successfully");
-          get().connectSocket();
-          return { success: true };
-        } else {
-          // Fall back to temporary token if needed
-          const tempToken = `temp_${res.data._id}_${Date.now()}`;
-          localStorage.setItem("token", tempToken);
-          set({ authUser: res.data });
-          console.log("Using temporary token as workaround");
-          toast.success("Logged in successfully");
-          get().connectSocket();
-          return { success: true };
-        }
+        // Server returned user but no token - use temporary token
+        const tempToken = `temp_${res.data._id}_${Date.now()}`;
+        localStorage.setItem("token", tempToken);
+        set({ authUser: res.data });
+        console.log("Using temporary token as workaround");
+        toast.success("Logged in successfully");
+        get().connectSocket();
+        return { success: true };
       }
       else {
         throw new Error("Invalid response from server");
