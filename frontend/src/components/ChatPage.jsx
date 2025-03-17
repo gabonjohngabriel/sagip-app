@@ -69,6 +69,18 @@ const ChatPage = () => {
     }
   }, [authUser, socket, users]);
   
+  useEffect(() => {
+    if (!authUser && !useAuthStore.getState().isCheckingAuth) {
+      // Only show error if we're not currently checking auth
+      setError("Please log in to access the chat");
+      // Optionally redirect to login page
+      // window.location.href = "/login";
+    } else if (authUser && !socket) {
+      // If we have a user but no socket, try to connect
+      useAuthStore.getState().connectSocket();
+    }
+  }, [authUser, socket]);
+  
   // FETCH USERS AND SET UP SOCKETS
   useEffect(() => {
     let intervalId;

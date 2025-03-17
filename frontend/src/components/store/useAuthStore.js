@@ -22,25 +22,45 @@ export const useAuthStore = create((set, get) => ({
   socket: null,
 
   checkAuth: async () => {
+    set({ isCheckingAuth: true });
     try {
       const token = localStorage.getItem("token");
       if (!token) {
         set({ authUser: null, isCheckingAuth: false });
-        return;
+        return { success: false, error: "No token found" };
       }
       
-      const res = await axiosInstance.get("/auth/check");
-      set({ authUser: res.data });
-      get().connectSocket();
+      // If using our temporary token workaround
+      if (token.startsWith('temp_')) {
+        const userId = token.split('_')[1];
+        
+        // Fetch user data directly instead of using auth/check
+        const res = await axiosInstance.get(`/users/${userId}`);
+        
+        if (res.data && res.data._id) {
+          set({ authUser: res.data });
+          get().connectSocket();
+          return { success: true };
+        } else {
+          throw new Error("Failed to fetch user data");
+        }
+      } else {
+        // Standard token flow
+        const res = await axiosInstance.get("/auth/check");
+        set({ authUser: res.data });
+        get().connectSocket();
+        return { success: true };
+      }
     } catch (error) {
       console.error("Error in checkAuth:", error);
-      localStorage.removeItem("token"); // Clear invalid token
+      localStorage.removeItem("token");
       set({ authUser: null });
+      return { success: false, error: error.response?.data?.message || "Authentication failed" };
     } finally {
       set({ isCheckingAuth: false });
     }
   },
-
+  
   signup: async (data) => {
     set({ isSigningUp: true });
     try {
@@ -72,62 +92,24 @@ export const useAuthStore = create((set, get) => ({
       const res = await axiosInstance.post("/auth/login", data);
       console.log("Login response:", res.data);
       
-      // Debug: Log the full response structure
-      console.log("Full response structure:", JSON.stringify(res.data, null, 2));
-      
-      // Handle various response formats
-      let token = null;
-      let user = null;
-      
-      // Check different possible token locations
-      if (res.data.token) {
-        token = res.data.token;
-        user = res.data.user || res.data;
-      } else if (res.data.user && res.data.user.token) {
-        token = res.data.user.token;
-        user = res.data.user;
-      } else if (res.data.accessToken) {
-        token = res.data.accessToken;
-        user = res.data.user || res.data;
-      } else if (res.data.jwt) {
-        token = res.data.jwt;
-        user = res.data.user || res.data;
-      } else if (typeof res.data === 'object') {
-        // Try to find the token in any top-level property
-        for (const key in res.data) {
-          if (typeof res.data[key] === 'string' && 
-              res.data[key].length > 20 && 
-              key.toLowerCase().includes('token')) {
-            token = res.data[key];
-            user = res.data;
-            break;
-          }
-        }
+      // Check if we received user data
+      if (res.data && res.data._id) {
+        // SERVER WORKAROUND: If no token is provided but we have user data,
+        // create a temporary token based on the user ID
+        const userId = res.data._id;
+        const tempToken = `temp_${userId}_${Date.now()}`;
+        
+        // Store the token and user data
+        localStorage.setItem("token", tempToken);
+        set({ authUser: res.data });
+        
+        console.log("Using temporary token as workaround");
+        toast.success("Logged in successfully");
+        get().connectSocket();
+        return { success: true };
+      } else {
+        throw new Error("Invalid response from server");
       }
-      
-      // For this specific case - server returns user info but no token
-      // Use user ID as a "token" (this is a workaround)
-      if (!token && res.data._id) {
-        console.log("No token found, using user ID as token");
-        token = `uid_${res.data._id}`;
-        user = res.data;
-      }
-      
-      if (!token) {
-        console.error("Token not found in response:", res.data);
-        throw new Error("No token received from server");
-      }
-      
-      // Store token and user data
-      localStorage.setItem("token", token);
-      console.log("Token stored:", token);
-      
-      // Set auth user
-      set({ authUser: user });
-      
-      toast.success("Logged in successfully");
-      get().connectSocket();
-      return { success: true };
     } catch (error) {
       console.error("Login error:", error);
       const errorMessage = error.response?.data?.message || error.message;
@@ -136,7 +118,7 @@ export const useAuthStore = create((set, get) => ({
     } finally {
       set({ isLoggingIn: false });
     }
-  },
+  },  
   
   logout: async () => {
     try {
@@ -169,40 +151,62 @@ export const useAuthStore = create((set, get) => ({
 
   connectSocket: () => {
     const { authUser } = get();
-    if (!authUser || get().socket?.connected) return;
-
-    console.log("Attempting to connect socket for user:", authUser._id);
-
+    if (!authUser || !authUser._id) {
+      console.warn("Cannot connect socket: No authenticated user");
+      return;
+    }
+    
+    // Disconnect existing socket if it exists
+    get().disconnectSocket();
+  
     try {
+      const token = localStorage.getItem("token");
+      
       const socket = io(SOCKET_URL, {
         query: {
           userId: authUser._id,
+          // Don't send the temporary token to the server
+          // as it might reject it
+          token: token.startsWith('temp_') ? undefined : token
         },
         reconnection: true,
         reconnectionAttempts: 5,
         reconnectionDelay: 1000,
         transports: ["websocket", "polling"],
       });
-
+    
       socket.on("connect", () => {
         console.log("Socket connected successfully");
       });
-
+  
       socket.on("connect_error", (error) => {
         console.error("Socket connection error:", error);
+        // If connection fails due to authentication, clear token
+        if (error.message?.includes("authentication")) {
+          localStorage.removeItem("token");
+          set({ authUser: null });
+        }
       });
-
+  
+      socket.on("disconnect", (reason) => {
+        console.log("Socket disconnected:", reason);
+        if (reason === "io server disconnect") {
+          // Server disconnected us, try to reconnect
+          socket.connect();
+        }
+      });
+  
       socket.connect();
       set({ socket: socket });
-
+  
       socket.on("getOnlineUsers", (userIds) => {
         set({ onlineUsers: userIds });
       });
     } catch (err) {
       console.error("Error initializing socket:", err);
     }
-  },
-
+  },  
+  
   disconnectSocket: () => {
     const socket = get().socket;
     if (socket) {
@@ -210,4 +214,25 @@ export const useAuthStore = create((set, get) => ({
       set({ socket: null });
     }
   },
+
+  checkTokenExpiration: () => {
+    const token = localStorage.getItem("token");
+    if (!token) return false;
+    
+    try {
+      // If you're using JWT, you could decode it here to check expiration
+      // For simple implementation, we'll just verify with the server
+      return axiosInstance.get("/auth/check-token")
+        .then(() => true)
+        .catch(() => {
+          // Token invalid or expired
+          localStorage.removeItem("token");
+          set({ authUser: null });
+          return false;
+        });
+    } catch (error) {
+      return false;
+    }
+  }
+  
 }));

@@ -66,6 +66,18 @@ function App() {
   const { theme: appTheme } = useThemeStore();
 
   useEffect(() => {
+    // Check auth on mount
+    useAuthStore.getState().checkAuth();
+    
+    // Set up periodic token validation
+    const interval = setInterval(() => {
+      useAuthStore.getState().checkTokenExpiration();
+    }, 5 * 60 * 1000); // Check every 5 minutes
+    
+    return () => clearInterval(interval);
+  }, []);
+  
+  useEffect(() => {
     try {
       console.log("Checking authentication...");
       const token = localStorage.getItem("token");
