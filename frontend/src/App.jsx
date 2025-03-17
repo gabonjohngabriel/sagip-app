@@ -1,6 +1,6 @@
 import React, { useEffect, Suspense } from 'react';
 import { Container, CssBaseline, Paper } from "@mui/material";
-import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
 import { Loader } from "lucide-react";
 import { Toaster } from "react-hot-toast";
@@ -103,7 +103,7 @@ function App() {
     );
 
   return (
-    <HashRouter>
+    <div>
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <Container maxWidth="sm">
@@ -128,7 +128,7 @@ function App() {
         </Container>
       </ThemeProvider>
       <Toaster />
-    </HashRouter>
+    </div>
   );
 }
 
