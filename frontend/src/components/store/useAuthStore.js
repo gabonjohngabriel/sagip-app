@@ -71,23 +71,28 @@ export const useAuthStore = create((set, get) => ({
     try {
       const res = await axiosInstance.post("/auth/login", data);
       console.log("Login response:", res.data);
-      
+
+      console.log("Full response structure:", JSON.stringify(res.data, null, 2));
+        
       // Handle various response formats
-      let token = null;
-      let user = null;
-      
-      // Check different possible token locations
       if (res.data.token) {
         token = res.data.token;
         user = res.data.user || res.data;
       } else if (res.data.user && res.data.user.token) {
         token = res.data.user.token;
         user = res.data.user;
+      } else if (res.data.accessToken) {
+        token = res.data.accessToken;
+        user = res.data.user || res.data;
+      } else if (res.data.jwt) {
+        token = res.data.jwt;
+        user = res.data.user || res.data;
       } else if (typeof res.data === 'object') {
         // Try to find the token in any top-level property
         for (const key in res.data) {
-          if (typeof res.data[key] === 'string' && res.data[key].length > 20) {
-            // This is likely the token
+          if (typeof res.data[key] === 'string' && 
+              res.data[key].length > 20 && 
+              key.toLowerCase().includes('token')) {
             token = res.data[key];
             user = res.data;
             break;
@@ -97,11 +102,29 @@ export const useAuthStore = create((set, get) => ({
       
       if (!token) {
         console.error("Token not found in response:", res.data);
-        throw new Error("No token received from server");
+        
+        // If API doesn't return a token but returns a success message,
+        // we might need to use the response from the check endpoint
+        if (res.data.success || res.data.message === "Login successful") {
+          try {
+            const checkRes = await axiosInstance.get("/auth/check");
+            user = checkRes.data;
+            // Use a custom token if the server doesn't provide one
+            token = "authenticated-" + new Date().getTime();
+          } catch (checkError) {
+            console.error("Failed to get user data after login:", checkError);
+            throw new Error("Authentication failed after login");
+          }
+        } else {
+          throw new Error("No token received from server");
+        }
       }
       
       // Store token and user data
       localStorage.setItem("token", token);
+      console.log("Token stored:", token);
+      
+      // Set auth user
       set({ authUser: user });
       
       toast.success("Logged in successfully");
@@ -116,7 +139,7 @@ export const useAuthStore = create((set, get) => ({
       set({ isLoggingIn: false });
     }
   },
-
+  
   logout: async () => {
     try {
       await axiosInstance.post("/auth/logout");
