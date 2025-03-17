@@ -33,3 +33,20 @@ axiosInstance.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // Log details of failed requests
+    console.error("Request failed:", {
+      url: error.config.url,
+      method: error.config.method,
+      headers: error.config.headers,
+      data: error.config.data,
+      status: error.response?.status,
+      responseData: error.response?.data
+    });
+    return Promise.reject(error);
+  }
+);
+

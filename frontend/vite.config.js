@@ -1,16 +1,16 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import path from 'path';
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import path from "path";
 
 export default defineConfig({
   plugins: [react()],
-  base: './',
+  base: "./",
   define: {
-    'process.env': {},
+    "process.env": {},
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './dist'),
+      "@": path.resolve(__dirname, "./dist"),
     },
   },
   server: {
@@ -18,11 +18,14 @@ export default defineConfig({
     cors: true,
     // Optional: Set up a proxy if you need it
     proxy: {
-      '/api': {
-        target: 'https://sagip-app.onrender.com',
+      "/api": {
+        target: "https://sagip-app.onrender.com",
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace(/^\/api/, '/api')
+        rewrite: (path) => path.replace(/^\/api/, "/api"),
+        headers: {
+          Origin: "https://sagip-app.onrender.com",
+        },
       },
     },
   },

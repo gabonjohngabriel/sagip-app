@@ -89,25 +89,41 @@ export const useAuthStore = create((set, get) => ({
   login: async (data) => {
     set({ isLoggingIn: true });
     try {
+      // First, try normal login
       const res = await axiosInstance.post("/auth/login", data);
-      console.log("Login response:", res.data);
       
-      // Check if we received user data
-      if (res.data && res.data._id) {
-        // SERVER WORKAROUND: If no token is provided but we have user data,
-        // create a temporary token based on the user ID
-        const userId = res.data._id;
-        const tempToken = `temp_${userId}_${Date.now()}`;
-        
-        // Store the token and user data
-        localStorage.setItem("token", tempToken);
-        set({ authUser: res.data });
-        
-        console.log("Using temporary token as workaround");
+      if (res.data && res.data.token) {
+        // Server returned proper token
+        localStorage.setItem("token", res.data.token);
+        set({ authUser: res.data.user || res.data });
         toast.success("Logged in successfully");
         get().connectSocket();
         return { success: true };
-      } else {
+      } 
+      else if (res.data && res.data._id) {
+        // Server returned user but no token - create a token request
+        const tokenRes = await axiosInstance.post("/auth/generate-token", {
+          userId: res.data._id
+        });
+        
+        if (tokenRes.data && tokenRes.data.token) {
+          localStorage.setItem("token", tokenRes.data.token);
+          set({ authUser: res.data });
+          toast.success("Logged in successfully");
+          get().connectSocket();
+          return { success: true };
+        } else {
+          // Fall back to temporary token if needed
+          const tempToken = `temp_${res.data._id}_${Date.now()}`;
+          localStorage.setItem("token", tempToken);
+          set({ authUser: res.data });
+          console.log("Using temporary token as workaround");
+          toast.success("Logged in successfully");
+          get().connectSocket();
+          return { success: true };
+        }
+      }
+      else {
         throw new Error("Invalid response from server");
       }
     } catch (error) {
@@ -118,8 +134,8 @@ export const useAuthStore = create((set, get) => ({
     } finally {
       set({ isLoggingIn: false });
     }
-  },  
-  
+  },
+    
   logout: async () => {
     try {
       await axiosInstance.post("/auth/logout");

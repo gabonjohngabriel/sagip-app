@@ -13,16 +13,22 @@ export const useChatStore = create((set, get) => ({
 
   getUsers: async () => {
     const token = localStorage.getItem("token");
-
-    if (!token) {
-      console.warn("⚠ No token found! Redirecting to login...");
+    const authUser = useAuthStore.getState().authUser;
+  
+    if (!token || !authUser) {
+      console.warn("⚠ No token or user found! Redirecting to login...");
       return;
     }
-
+  
     set({ isUsersLoading: true });
-
+  
     try {
-      const res = await axiosInstance.get("/messages/users");
+      // If using temporary token, append user ID to URL
+      const url = token.startsWith('temp_') 
+        ? `/messages/users?userId=${authUser._id}` 
+        : "/messages/users";
+      
+      const res = await axiosInstance.get(url);
       set({ users: res.data });
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -31,7 +37,7 @@ export const useChatStore = create((set, get) => ({
       set({ isUsersLoading: false });
     }
   },
-
+    
   getMessages: async (userId) => {
     set({ isMessagesLoading: true });
     try {
