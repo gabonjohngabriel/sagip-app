@@ -18,25 +18,18 @@ axiosInstance.interceptors.request.use(
     const token = localStorage.getItem("token");
     
     if (token) {
-      // Simply use the standard bearer token format
-      config.headers.Authorization = `Bearer ${token}`;
+      // For our temporary token workaround
+      if (token.startsWith('temp_')) {
+        const userId = token.split('_')[1];
+        config.headers['X-User-Id'] = userId;
+      } else {
+        // Standard token
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
     return config;
   },
   (error) => {
-    return Promise.reject(error);
-  }
-);
-t// Add a response interceptor to handle token expiration
-ance.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      // Token expired or invalid
-      localStorage.removeItem("token");
-      // Optionally redirect to login page
-      // window.location.href = "/login";
-    }
     return Promise.reject(error);
   }
 );
