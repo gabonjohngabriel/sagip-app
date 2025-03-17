@@ -45,6 +45,7 @@
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.3.0",
     "redux": "^5.0.1",
+    "sagip-app": "file:..",
     "sass": "^1.85.1",
     "socket.io-client": "^4.8.1",
     "stream-browserify": "^3.0.0",
