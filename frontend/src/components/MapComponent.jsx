@@ -11,14 +11,14 @@ import {
 import Logo from "./Logo";
 import useStyles from "./Styles";
 import useMapStyles from "./MapStyles";
-import L from "leaflet";
+import * as L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 import "leaflet-routing-machine";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
 import "./Map.css";
 
-// Import leaflet-providers properly
+// Import the Leaflet Providers plugin properly
 import "leaflet-providers";
 
 const MapComponent = () => {
@@ -39,7 +39,7 @@ const MapComponent = () => {
       lat: 14.952523615488879,
       lng: 120.75991397365726,
       address: "2468 St. John St. Villena Subd. 2, Apalit, 2016 Pampanga",
-      image: "./images/merian.png",
+      image: "../images/merian.png",
       description: "Description",
       patients: getRandomNumber(0, 100),
       rooms: getRandomNumber(0, 15),
@@ -52,7 +52,7 @@ const MapComponent = () => {
       lat: 14.95254913946995,
       lng: 120.7638930942128,
       address: "Gonzales Ave, Apalit, 2016 Pampanga",
-      image: "./images/apalit-doctors-hospital.jpg",
+      image: "../images/apalit-doctors-hospital.jpg",
       description: "Description",
       patients: getRandomNumber(10, 100),
       rooms: getRandomNumber(0, 15),
@@ -65,7 +65,7 @@ const MapComponent = () => {
       lat: 15.04413615531548,
       lng: 120.68584423557277,
       address: "San Fernando Interchange, San Fernando, 2000 Pampanga",
-      image: "./images/greencity.png",
+      image: "../images/greencity.png",
       description: "Description",
       patients: getRandomNumber(10, 100),
       rooms: getRandomNumber(0, 15),
@@ -78,7 +78,7 @@ const MapComponent = () => {
       lat: 14.96027668509019,
       lng: 120.75936527120034,
       address: "Apalit, Pampanga",
-      image: "./images/premier.png",
+      image: "../images/premier.png",
       description: "Description",
       patients: getRandomNumber(10, 100),
       rooms: getRandomNumber(1, 15),
@@ -91,7 +91,7 @@ const MapComponent = () => {
       lat: 15.0346621713219,
       lng: 120.68466824622196,
       address: "San Fernando, Pampanga",
-      image: "./images/jbl.png",
+      image: "../images/jbl.png",
       description: "Description",
       patients: getRandomNumber(10, 100),
       rooms: getRandomNumber(0, 15),
@@ -169,6 +169,12 @@ const MapComponent = () => {
     alert("911\n\n");
   };
 
+  // Check for traffic along route (simplified placeholder)
+  const checkTrafficAlongRoute = (startPoint, endPoint) => {
+    console.log("Checking traffic between", startPoint, "and", endPoint);
+    // This would implement actual traffic checking logic
+  };
+
   // LEAFLET
   useEffect(() => {
     console.log("mapRef.current:", mapRef.current);
@@ -176,51 +182,26 @@ const MapComponent = () => {
 
     if (mapRef.current && !mapInstanceRef.current) {
       console.log("Initializing map...");
-
-      // Create the map instance
-      const map = L.map(mapRef.current).setView([14.95, 120.75], 12);
+      // Initialize map centered on Pampanga region
+      const map = L.map(mapRef.current).setView([15.0, 120.7], 11);
       console.log("Map initialized:", map);
       mapInstanceRef.current = map;
 
-      // Try to add tile layer with more robust error handling
-      try {
-        // Check if provider function is available
-        if (typeof L.tileLayer.provider === "function") {
-          L.tileLayer.provider("CartoDB.Positron").addTo(map);
-        } else {
-          console.warn(
-            "L.tileLayer.provider is not a function, using default tile layer"
-          );
-          L.tileLayer(
-            "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-            {
-              attribution:
-                '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-              subdomains: "abcd",
-              maxZoom: 20,
-            }
-          ).addTo(map);
+      L.tileLayer(
+        "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+        {
+          attribution: '&copy; <a href="https://www.carto.com/">CARTO</a>',
+          subdomains: "abcd",
+          maxZoom: 20,
         }
-      } catch (error) {
-        console.error("Error using leaflet-providers:", error);
-        // Fallback to direct tile layer
-        L.tileLayer(
-          "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-          {
-            attribution:
-              '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-            subdomains: "abcd",
-            maxZoom: 20,
-          }
-        ).addTo(map);
-      }
+      ).addTo(map);
 
       // HOSPITAL ICON
       const hospitalIcon = L.icon({
-        iconUrl: "./images/hospital.png",
+        iconUrl: "../images/hospital.png",
         iconSize: [35, 35],
-        iconAnchor: [35, 20],
-        popupAnchor: [-15, -40],
+        iconAnchor: [17, 35],
+        popupAnchor: [0, -35],
       });
 
       // TRAFFIC ICONS
@@ -246,12 +227,12 @@ const MapComponent = () => {
       });
 
       let DefaultIcon = L.icon({
-        iconUrl: "./images/marker-icon.png",
+        iconUrl: "../images/marker-icon.png",
         shadowUrl: iconShadow,
-        iconSize: [41, 41],
+        iconSize: [25, 41],
         shadowSize: [41, 41],
         iconAnchor: [12, 41],
-        shadowAnchor: [6, 40],
+        shadowAnchor: [12, 41],
         popupAnchor: [1, -34],
       });
 
@@ -368,38 +349,10 @@ const MapComponent = () => {
         `);
       });
 
-      // CHECK TRAFFIC
-      const checkTrafficAlongRoute = (startPoint, endPoint) => {
-        // TRAFFIC HOTSPOTS
-        const warningsFound = [];
+      // Initially hide traffic layer
+      map.removeLayer(trafficLayerGroup);
 
-        trafficHotspots.forEach((hotspot) => {
-          const hotspotPoint = L.latLng(hotspot.lat, hotspot.lng);
-          const distanceToStart = hotspotPoint.distanceTo(startPoint);
-          const distanceToEnd = hotspotPoint.distanceTo(endPoint);
-          const routeLength = startPoint.distanceTo(endPoint);
-
-          if (
-            distanceToStart + distanceToEnd < routeLength * 1.3 &&
-            (distanceToStart < 5000 || distanceToEnd < 5000)
-          ) {
-            warningsFound.push(hotspot);
-          }
-        });
-
-        if (warningsFound.length > 0) {
-          let message = "Traffic Alert:\n\n";
-          warningsFound.forEach((warning) => {
-            message += `• ${warning.location}: ${warning.description}\n\n`;
-          });
-
-          setTimeout(() => {
-            alert(message);
-          }, 1000);
-        }
-      };
-
-      // MARKERS
+      // MARKERS for hospitals
       hospitals.forEach((hospital) => {
         const marker = L.marker([hospital.lat, hospital.lng], {
           icon: hospitalIcon,
@@ -407,7 +360,7 @@ const MapComponent = () => {
 
         markersRef.current.push(marker);
 
-        // MARKER
+        // MARKER tooltip
         marker.bindTooltip(hospital.name, {
           permanent: false,
           direction: "top",
@@ -415,7 +368,7 @@ const MapComponent = () => {
           className: "hospital-tooltip",
         });
 
-        // INFO
+        // INFO popup content
         const popupContent = `
           <div class="popup-content">
             <img src="${hospital.image}" alt="${
@@ -434,40 +387,40 @@ const MapComponent = () => {
               /[^a-zA-Z0-9]/g,
               "-"
             )}" class="info-section">
-              <p><strong>Patients:</strong> ${hospital.patients}</p>
-              <p><strong>Available Rooms:</strong> ${hospital.rooms}</p>
-            </div>
-            <button class="info-button service-button" onclick="window.toggleHospitalService('${hospital.name.replace(
-              /[^a-zA-Z0-9]/g,
-              "-"
-            )}', this)">
-              Request Medical Service
-            </button>
-            <div id="service-${hospital.name.replace(
-              /[^a-zA-Z0-9]/g,
-              "-"
-            )}" class="info-section">
-              <p>${hospital.customerservice}.</p>
-            </div>
-            <button class="info-button route-button" onclick="window.calculateRoute(${
-              hospital.lat
-            }, ${hospital.lng})">
-              Get Route
-            </button>
-            <button class="info-button commuter-button" onclick="window.showCommuterInfo('${hospital.name.replace(
-              /[^a-zA-Z0-9]/g,
-              "-"
-            )}')">
-              Public Transport Options
-            </button>
-            <div id="commuter-${hospital.name.replace(
-              /[^a-zA-Z0-9]/g,
-              "-"
-            )}" class="info-section commuter-info">
-              <p><strong>Public Transport:</strong></p>
-              <p>${hospital.publicTransport}</p>
-            </div>
-          </div>`;
+            <p><strong>Patients:</strong> ${hospital.patients}</p>
+            <p><strong>Available Rooms:</strong> ${hospital.rooms}</p>
+          </div>
+          <button class="info-button service-button" onclick="window.toggleHospitalService('${hospital.name.replace(
+            /[^a-zA-Z0-9]/g,
+            "-"
+          )}', this)">
+            Request Medical Service
+          </button>
+          <div id="service-${hospital.name.replace(
+            /[^a-zA-Z0-9]/g,
+            "-"
+          )}" class="info-section">
+            <p>${hospital.customerservice}.</p>
+          </div>
+          <button class="info-button route-button" onclick="window.calculateRoute(${
+            hospital.lat
+          }, ${hospital.lng})">
+            Get Route
+          </button>
+          <button class="info-button commuter-button" onclick="window.showCommuterInfo('${hospital.name.replace(
+            /[^a-zA-Z0-9]/g,
+            "-"
+          )}')">
+            Public Transport Options
+          </button>
+          <div id="commuter-${hospital.name.replace(
+            /[^a-zA-Z0-9]/g,
+            "-"
+          )}" class="info-section commuter-info">
+            <p><strong>Public Transport:</strong></p>
+            <p>${hospital.publicTransport}</p>
+          </div>
+        </div>`;
 
         // POPUP
         marker.bindPopup(popupContent, {
@@ -533,149 +486,97 @@ const MapComponent = () => {
         crosshairMarker.setLatLng(map.getCenter());
       });
 
-      // ROUTING
+      // ROUTING - Fixed implementation
       const calculateRoute = (lat, lng) => {
-        if (map.routingControl) {
-          map.removeControl(map.routingControl);
+        console.log("🛣️ Route requested to:", lat, lng);
+
+        // Clean up previous routing control if it exists
+        if (routingControlRef.current) {
+          map.removeControl(routingControlRef.current);
         }
 
-        L.DomUtil.addClass(
-          map._container,
-          "leaflet-routing-container leaflet-bar"
-        );
-        map._container.style.height = "100";
-        map._container.style.width = "100";
-        map._container.style.maxHeight = "100%";
-        map._container.style.maxWidth = "100%";
-        map._container.style.overflow = "hidden";
-
-        // PLACE
-        const container = map._container;
-        const textDiv = L.DomUtil.create(
-          "div",
-          "place-location-text",
-          container
-        );
-        textDiv.innerHTML = "PLACE YOUR CURRENT LOCATION";
-        textDiv.style.position = "absolute";
-        textDiv.style.top = "10px";
-        textDiv.style.left = "50%";
-        textDiv.style.transform = "translateX(-50%)";
-        textDiv.style.backgroundColor = "rgba(255, 255, 255, 0.8)";
-        textDiv.style.padding = "10px";
-        textDiv.style.borderRadius = "5px";
-        textDiv.style.fontSize = "16px";
-        textDiv.style.fontWeight = "bold";
-        textDiv.style.zIndex = "1000";
-
-        map.on("click", function () {
-          container.removeChild(textDiv);
-        });
-
-        // GPS TRACKER
-        map.locate({ setView: true, maxZoom: 16 });
-
-        map.on("locationfound", function (e) {
-          map.routingControl.spliceWaypoints(0, 1, e.latlng);
-          map.off("click");
-          map.off("mousemove");
-          map.routingControl.route();
-
-          // TRAFFIC HOTSPOTS
-          const destination = L.latLng(lat, lng);
-          const startPoint = e.latlng;
-          checkTrafficAlongRoute(startPoint, destination);
-        });
-
-        map.on("locationerror", function () {
-          alert("Location access disabled.");
-        });
-
-        // MARKERS
-        map.routingControl = L.Routing.control({
+        // Create a new routing control with current map center as start point
+        routingControlRef.current = L.Routing.control({
           waypoints: [L.latLng(map.getCenter()), L.latLng(lat, lng)],
-          // LIMIT ONE MARKERS
-          createMarker: function (i, waypoint, n) {
-            if (i === 0) {
-              const marker = L.marker(waypoint.latLng, { draggable: true });
-              map.on("mousemove", function (e) {
-                marker.setLatLng(e.latlng);
-              });
-              map.on("click", function (e) {
-                marker.setLatLng(e.latlng);
-                map.off("mousemove");
-                map.routingControl.spliceWaypoints(0, 1, e.latlng);
-                map.off("click");
-                map.off("mousemove");
-                map.routingControl.route();
-
-                // Check for traffic hotspots along the route
-                const destination = L.latLng(lat, lng);
-                const startPoint = e.latlng;
-                checkTrafficAlongRoute(startPoint, destination);
-              });
-              return marker;
-            } else if (i === n - 1) {
-              return L.marker(waypoint.latLng);
-            }
-            return null;
-          },
+          routeWhileDragging: true,
           lineOptions: {
             styles: [
-              { color: "green", opacity: 1, weight: 10 },
-              { color: "white", opacity: 0.7, weight: 5 },
+              { color: "green", opacity: 0.8, weight: 6 },
+              { color: "white", opacity: 0.5, weight: 2 },
             ],
           },
-          routeWhileDragging: true,
+          createMarker: function (i, waypoint, n) {
+            const icons = [DefaultIcon, hospitalIcon];
+            return L.marker(waypoint.latLng, {
+              draggable: i === 0,
+              icon: icons[i] || DefaultIcon,
+            });
+          },
           addWaypoints: false,
-          autoRoute: false,
+          showAlternatives: false,
+          fitSelectedRoutes: true,
         }).addTo(map);
 
-        // EXIT
-        const exitButton = L.control({ position: "topright" });
+        // Add instruction to place location
+        const instructionDiv = L.DomUtil.create("div", "place-instruction");
+        instructionDiv.innerHTML =
+          "Click on the map to set your starting point";
+        instructionDiv.style.position = "absolute";
+        instructionDiv.style.top = "10px";
+        instructionDiv.style.left = "50%";
+        instructionDiv.style.transform = "translateX(-50%)";
+        instructionDiv.style.backgroundColor = "rgba(255, 255, 255, 0.8)";
+        instructionDiv.style.padding = "10px";
+        instructionDiv.style.borderRadius = "5px";
+        instructionDiv.style.zIndex = "1000";
+        map._container.appendChild(instructionDiv);
 
-        exitButton.onAdd = function () {
-          const div = L.DomUtil.create(
-            "div",
-            "exit-button leaflet-routing-container leaflet-bar"
-          );
-          div.innerHTML = "Exit";
-          div.onclick = function () {
-            map.removeControl(map.routingControl);
-            map.removeControl(exitButton);
-            function fadeOut(element) {
-              if (element && element.parentNode) {
-                let opacity = 1;
-                const fade = setInterval(() => {
-                  if (opacity <= 0) {
-                    clearInterval(fade);
-                    element.style.display = "none";
-                  } else {
-                    opacity -= 0.1;
-                    element.style.opacity = opacity;
-                  }
-                }, 50);
-              }
-            }
-            fadeOut(textDiv);
-          };
-          return div;
+        // One-time click handler to set start point
+        const onMapClick = function (e) {
+          routingControlRef.current.spliceWaypoints(0, 1, e.latlng);
+          map.off("click", onMapClick);
+          map._container.removeChild(instructionDiv);
+
+          // Check for traffic along the route
+          checkTrafficAlongRoute(e.latlng, L.latLng(lat, lng));
+
+          // Add exit button
+          if (!exitButtonRef.current) {
+            const exitBtn = L.control({ position: "topright" });
+            exitBtn.onAdd = function () {
+              const div = L.DomUtil.create("div", "exit-button");
+              div.innerHTML = "Exit Route";
+              div.onclick = function () {
+                map.removeControl(routingControlRef.current);
+                map.removeControl(exitBtn);
+                routingControlRef.current = null;
+                exitButtonRef.current = null;
+              };
+              return div;
+            };
+            exitBtn.addTo(map);
+            exitButtonRef.current = exitBtn;
+          }
         };
 
-        exitButton.addTo(map);
+        map.on("click", onMapClick);
 
-        // EXIT
-        if (map.exitButton) {
-          map.removeControl(map.exitButton);
-        }
+        // Try to get user's location
+        map.locate({ setView: false });
+        map.on("locationfound", function (e) {
+          routingControlRef.current.spliceWaypoints(0, 1, e.latlng);
+          map.off("click", onMapClick);
+          if (instructionDiv.parentNode) {
+            map._container.removeChild(instructionDiv);
+          }
+          checkTrafficAlongRoute(e.latlng, L.latLng(lat, lng));
+        });
 
-        map.exitButton = exitButton;
-
-        // CLOSE POP-UP
+        // Close any open popups
         map.closePopup();
       };
 
-      // WINDOWS
+      // Expose functions to window object for popup buttons
       window.toggleHospitalInfo = toggleHospitalInfo;
       window.toggleHospitalService = toggleHospitalService;
       window.showCustomerService = showCustomerService;
@@ -749,138 +650,139 @@ const MapComponent = () => {
       <style
         dangerouslySetInnerHTML={{
           __html: `
-          .traffic-alert-button {
-            background: white;
-            border: 2px solid rgba(0, 0, 0, 0.2);
-            border-radius: 4px;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            cursor: pointer;
-            margin-top: 10px;
-          }
-          
-          .traffic-alert-button.active {
-            background: #f0f0f0;
-            box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
-          }
-          
-          .commuter-guide-button {
-            background: white;
-            border: 2px solid rgba(0, 0, 0, 0.2);
-            border-radius: 4px;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            cursor: pointer;
-          }
-          
-          .commuter-guide-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-          }
-          
-          .commuter-guide-content {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            max-width: 600px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-          }
-          
-          .commuter-info {
-            background: #f0f8ff;
-            border-left: 3px solid #4682B4;
-            padding: 8px;
-            margin-top: 8px;
-          }
-          
-          .commuter-button {
-            background: #4682B4 !important;
-            color: white !important;
-          }
-          
-          .traffic-tooltip {
-            font-weight: bold;
-          }
-          
-          .close-guide-button {
-            background: #4682B4;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 20px;
-          }
-          
-          .hospital-transport-info {
-            border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
+        .traffic-alert-button {
+          background: white;
+          border: 2px solid rgba(0, 0, 0, 0.2);
+          border-radius: 4px;
+          width: 40px;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 22px;
+          cursor: pointer;
+          margin-top: 10px;
+        }
+        
+        .traffic-alert-button.active {
+          background: #f0f0f0;
+          box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+        }
+        
+        .commuter-guide-button {
+          background: white;
+          border: 2px solid rgba(0, 0, 0, 0.2);
+          border-radius: 4px;
+          width: 40px;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 22px;
+          cursor: pointer;
+        }
+        
+        .commuter-guide-modal {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0,0,0,0.5);
+          z-index: 1000;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        
+        .commuter-guide-content {
+          background: white;
+          padding: 20px;
+          border-radius: 8px;
+          max-width: 600px;
+          width: 90%;
+          max-height: 80vh;
+          overflow-y: auto;
+        }
+        
+        .commuter-info {
+          background: #f0f8ff;
+          border-left: 3px solid #4682B4;
+          padding: 8px;
+          margin-top: 8px;
+        }
+        
+        .commuter-button {
+          background: #4682B4 !important;
+          color: white !important;
+        }
+        
+        .traffic-tooltip {
+          font-weight: bold;
+        }
+        
+        .close-guide-button {
+          background: #4682B4;
+          color: white;
+          border: none;
+          padding: 8px 16px;
+          border-radius: 4px;
+          cursor: pointer;
+          margin-top: 20px;
+        }
+        
+        .hospital-transport-info {
+          border-bottom: 1px solid #eee;
+          padding-bottom: 10px;
+        }
 
-          .hospital-transport-info {
+        .hospital-transport-info {
           border-bottom: 1px solid #eee;
           padding-bottom: 10px;
           margin-bottom: 10px;
-          }
+        }
 
-          .emergency-button {
-            background: white;
-            border: 2px solid rgba(0, 0, 0, 0.2);
-            border-radius: 4px;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            cursor: pointer;
-          }
+        .emergency-button {
+          background: white;
+          border: 2px solid rgba(0, 0, 0, 0.2);
+          border-radius: 4px;
+          width: 40px;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 22px;
+          cursor: pointer;
+        }
 
-          .traffic-popup h4 {
-            margin: 0 0 8px 0;
-            color: #333;
-          }
+        .traffic-popup h4 {
+          margin: 0 0 8px 0;
+          color: #333;
+        }
 
-          .traffic-popup p {
-            margin: 0;
-            font-size: 13px;
-          }
+        .traffic-popup p {
+          margin: 0;
+          font-size: 13px;
+        }
 
-          .hospital-tooltip {
-            font-weight: bold;
-            font-size: 14px;
-          }
+        .hospital-tooltip {
+          font-weight: bold;
+          font-size: 14px;
+        }
 
-          .exit-button {
-            background: white;
-            padding: 8px 12px;
-            font-weight: bold;
-            cursor: pointer;
-            border: 2px solid rgba(0, 0, 0, 0.2);
-            border-radius: 4px;
-          }
+        .exit-button {
+          background: white;
+          padding: 8px 12px;
+          font-weight: bold;
+          cursor: pointer;
+          border: 2px solid rgba(0, 0, 0, 0.2);
+          border-radius: 4px;
+        }
 
-          .exit-button:hover {
-            background: #f0f0f0;
-          }
-          `,
+        .exit-button:hover {
+          background: #f0f0f0;
+        }
+        `,
         }}
       />
     </>

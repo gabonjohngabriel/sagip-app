@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     alignItems: "center",
     boxSizing: "border-box",
-    overflow: "hidden",  
+    overflow: "hidden",
     "@media (max-width: 768px)": {
       padding: "10px",
     },
@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
     padding: "20px",
     boxSizing: "border-box",
   },
-  
+
   main2: {
     position: "fixed",
     bottom: 0,
@@ -85,7 +85,11 @@ const useStyles = makeStyles((theme) => ({
   },
   // BACKGROUND
   backgroundGreenTheme: {
-    background: "radial-gradient(circle at top left,rgb(12, 247, 129), transparent 70%), radial-gradient(circle at bottom right,rgb(36, 119, 64), transparent 70%), radial-gradient(circle at center, #40c057, transparent 50%), linear-gradient(135deg, #208a3c, #0f5a26)",
+    backgroundGreenTheme: {
+      background: `radial-gradient(circle at top left, #b0f2b6, transparent 60%),
+                   radial-gradient(circle at bottom right, #4caf50, transparent 60%),
+                   linear-gradient(to bottom, #a8e063, #56ab2f)`,
+    },
   },
   // COLORS
   green: {
@@ -124,10 +128,10 @@ const useStyles = makeStyles((theme) => ({
   // CARDS
   card: {
     margin: "4px",
-    transition: "filter 0.3s ease, opacity 0.3s ease", 
+    transition: "filter 0.3s ease, opacity 0.3s ease",
     opacity: "1",
     "&:hover": {
-      filter: "blur(0)", 
+      filter: "blur(0)",
       opacity: 1,
     },
   },
@@ -190,21 +194,21 @@ const useStyles = makeStyles((theme) => ({
   },
   mapContainer: {
     width: "100%",
-    minHeight: "300px", 
+    minHeight: "300px",
     height: "75vh",
     overflow: "hidden",
   },
   mapContent: {
     width: "100%",
     height: "75vh",
-    minHeight: "300px", 
+    minHeight: "300px",
     padding: "10px",
     borderRadius: "8px",
     "@media (max-width: 500px)": {
       height: "50vh",
     },
   },
-    textSpacing: {
+  textSpacing: {
     lineHeight: "20px !important",
   },
   width: {

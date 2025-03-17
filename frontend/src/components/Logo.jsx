@@ -6,7 +6,7 @@ function Logo() {
 
   return (
     <img 
-      src="./images/healthcare.png" 
+      src="../images/healthcare.png" 
       alt="Healthcare" 
       className={styles.largeLogo}
     />

@@ -407,7 +407,7 @@ const ChooseMap = () => {
                   className={styles.poppins}
                   sx={{ color: "#666" }}
                 >
-                  help@sagipapp.com
+                  help@sagip.app
                 </Typography>
               </Card>
             </Grid>

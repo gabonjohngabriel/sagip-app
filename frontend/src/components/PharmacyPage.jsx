@@ -71,12 +71,12 @@ export default function PharmacyPage() {
 
   // CATEGORIES
   const categories = [
-    { name: "Bone & Joint Care", img: "./images/bone.png" },
-    { name: "Diabetes Care", img: "./images/diabetes.jpg" },
-    { name: "Kidney Care", img: "./images/kidney.png" },
-    { name: "Liver Care", img: "./images/liver.jpg" },
-    { name: "Respiratory Care", img: "./images/respiratory.jpg" },
-    { name: "Eye Care", img: "./images/systane.png" },
+    { name: "Bone & Joint Care", img: "../images/bone.png" },
+    { name: "Diabetes Care", img: "../images/diabetes.jpg" },
+    { name: "Kidney Care", img: "../images/kidney.png" },
+    { name: "Liver Care", img: "../images/liver.jpg" },
+    { name: "Respiratory Care", img: "../images/respiratory.jpg" },
+    { name: "Eye Care", img: "../images/systane.png" },
   ];
 
   // SHOP LIST
@@ -90,7 +90,7 @@ export default function PharmacyPage() {
       originalPrice: 15.0,
       rating: 5,
       count: 50,
-      img: "./images/aspirin.png",
+      img: "../images/aspirin.png",
       category: "Nutrition",
       dosageForm: "Tablet or caplet",
       dosageStrength: "500 mg per tablet",
@@ -107,7 +107,7 @@ export default function PharmacyPage() {
       originalPrice: 20.0,
       rating: 4.9,
       count: 200,
-      img: "./images/ibuprofen.png",
+      img: "../images/ibuprofen.png",
       category: "Nutrition",
       dosageForm: "Tablet",
       dosageStrength: "400 mg per tablet",
@@ -124,7 +124,7 @@ export default function PharmacyPage() {
       originalPrice: 12.0,
       rating: 4.9,
       count: 10.0,
-      img: "./images/biogesic.png",
+      img: "../images/biogesic.png",
       category: "Nutrition",
       dosageForm: "Tablet",
       dosageStrength: "500 mg per tablet",
@@ -140,7 +140,7 @@ export default function PharmacyPage() {
       originalPrice: 100.0,
       rating: 4.7,
       count: 180,
-      img: "./images/claritin.png",
+      img: "../images/claritin.png",
       category: "Nutrition",
       dosageForm: "Tablet",
       dosageStrength: "10 mg per tablet",
@@ -157,7 +157,7 @@ export default function PharmacyPage() {
       originalPrice: 30.0,
       rating: 4.8,
       count: 16,
-      img: "./images/omeprazole.png",
+      img: "../images/omeprazole.png",
       category: "Nutrition",
       dosageForm: "Capsule",
       dosageStrength: "20 mg per capsule",
@@ -173,7 +173,7 @@ export default function PharmacyPage() {
       originalPrice: 35.0,
       rating: 4.6,
       count: 4,
-      img: "./images/metformin.png",
+      img: "../images/metformin.png",
       category: "Nutrition",
       dosageForm: "Tablet",
       dosageStrength: "500 mg per tablet",
@@ -190,7 +190,7 @@ export default function PharmacyPage() {
       originalPrice: 40.0,
       rating: 4.7,
       count: 18,
-      img: "./images/lisinopril.png",
+      img: "../images/lisinopril.png",
       category: "Nutrition",
       dosageForm: "Tablet",
       dosageStrength: "10 mg per tablet",
@@ -206,7 +206,7 @@ export default function PharmacyPage() {
       originalPrice: 20.0,
       rating: 4.5,
       count: 15,
-      img: "./images/simvastatin.jpg",
+      img: "../images/simvastatin.jpg",
       category: "Nutrition",
       dosageForm: "Tablet",
       dosageStrength: "20 mg per tablet",
@@ -223,7 +223,7 @@ export default function PharmacyPage() {
       originalPrice: 18.0,
       rating: 4.8,
       count: 19,
-      img: "./images/amlodipine.png",
+      img: "../images/amlodipine.png",
       category: "Nutrition",
       dosageForm: "Tablet",
       dosageStrength: "5 mg per tablet",
@@ -609,7 +609,7 @@ export default function PharmacyPage() {
               >
                 <Box sx={{ position: "static", textAlign: "center" }}>
                   <img
-                    src="./images/delivery.gif"
+                    src="../images/delivery.gif"
                     alt="Delivery"
                     style={{ maxWidth: "100%", borderRadius: "8px" }}
                   />

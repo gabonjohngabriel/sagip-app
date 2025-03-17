@@ -16,6 +16,7 @@ import AppointmentPage from './components/AppointmentPage';
 import BillPage from './components/MedicalBillPage'; 
 import LoginPage from './components/LoginPage'; 
 import ChatPage from './components/ChatPage'; 
+import MapPage from './components/MapPage'; 
 import SignupPage from './components/SignupPage'; 
 import PharmacyPage from './components/PharmacyPage'; 
 
@@ -91,7 +92,6 @@ function App() {
     }
   }, [checkAuth]);  
 
-  const MapPage = () => <PlaceholderComponent name="MapPage" />;
   const PaymentSelectionDialog = () => <PlaceholderComponent name="Payment" />;
   const Dashboard = () => <PlaceholderComponent name="Dashboard" />;
 
