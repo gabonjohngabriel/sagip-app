@@ -22,6 +22,7 @@ export default defineConfig({
         target: 'https://sagip-app.onrender.com',
         changeOrigin: true,
         secure: false,
+        rewrite: (path) => path.replace(/^\/api/, '/api')
       },
     },
   },
