@@ -1,4 +1,4 @@
-# SAGIP APP 
+# SAGIP Web Application 
 
 ### A Research Study Presented to the Faculty of the Senior High School Department 
 
