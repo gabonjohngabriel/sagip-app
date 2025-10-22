@@ -11,6 +11,7 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
+
 import { Search, Phone, MoreVertical, Send, Mic, Image } from "lucide-react";
 import useStyles from "./Styles";
 import Logo from "./Logo";

@@ -4,13 +4,15 @@ import toast from "react-hot-toast";
 import { io } from "socket.io-client";
 
 // Define the API and socket URLs
-const API_URL = process.env.NODE_ENV === "development"
-  ? "http://localhost:5002/api"
-  : "https://sagip-app.onrender.com/api";
+const API_URL =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:5002/api"
+    : "https://sagip-app.onrender.com/api";
 
-const SOCKET_URL = process.env.NODE_ENV === "development"
-  ? "http://localhost:5002"
-  : "https://sagip-app.onrender.com";
+const SOCKET_URL =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:5002"
+    : "https://sagip-app.onrender.com";
 
 export const useAuthStore = create((set, get) => ({
   authUser: null,
@@ -29,7 +31,7 @@ export const useAuthStore = create((set, get) => ({
         set({ authUser: null, isCheckingAuth: false });
         return { success: false, error: "No token found" };
       }
-      
+
       // Try standard token check first
       try {
         const res = await axiosInstance.get("/auth/check");
@@ -38,13 +40,13 @@ export const useAuthStore = create((set, get) => ({
         return { success: true };
       } catch (error) {
         // If standard check fails and we have a temp token, try that approach
-        if (token && token.startsWith('temp_')) {
-          const userId = token.split('_')[1];
-          
+        if (token && token.startsWith("temp_")) {
+          const userId = token.split("_")[1];
+
           try {
             // Fetch user data directly instead of using auth/check
             const res = await axiosInstance.get(`/users/${userId}`);
-            
+
             if (res.data && res.data._id) {
               set({ authUser: res.data });
               get().connectSocket();
@@ -64,17 +66,20 @@ export const useAuthStore = create((set, get) => ({
       console.error("Error in checkAuth:", error);
       localStorage.removeItem("token");
       set({ authUser: null });
-      return { success: false, error: error.response?.data?.message || "Authentication failed" };
+      return {
+        success: false,
+        error: error.response?.data?.message || "Authentication failed",
+      };
     } finally {
       set({ isCheckingAuth: false });
     }
   },
-        
+
   signup: async (data) => {
     set({ isSigningUp: true });
     try {
       const res = await axiosInstance.post("/auth/signup", data);
-      
+
       // Make sure we properly handle the token
       const token = res.data.token;
       if (token) {
@@ -100,7 +105,7 @@ export const useAuthStore = create((set, get) => ({
     try {
       // First, try normal login
       const res = await axiosInstance.post("/auth/login", data);
-      
+
       if (res.data && res.data.token) {
         // Server returned proper token
         localStorage.setItem("token", res.data.token);
@@ -108,8 +113,7 @@ export const useAuthStore = create((set, get) => ({
         toast.success("Logged in successfully");
         get().connectSocket();
         return { success: true };
-      } 
-      else if (res.data && res.data._id) {
+      } else if (res.data && res.data._id) {
         // Server returned user but no token - use temporary token
         const tempToken = `temp_${res.data._id}_${Date.now()}`;
         localStorage.setItem("token", tempToken);
@@ -118,8 +122,7 @@ export const useAuthStore = create((set, get) => ({
         toast.success("Logged in successfully");
         get().connectSocket();
         return { success: true };
-      }
-      else {
+      } else {
         throw new Error("Invalid response from server");
       }
     } catch (error) {
@@ -131,7 +134,7 @@ export const useAuthStore = create((set, get) => ({
       set({ isLoggingIn: false });
     }
   },
-    
+
   logout: async (silent = false) => {
     try {
       await axiosInstance.post("/auth/logout");
@@ -150,7 +153,7 @@ export const useAuthStore = create((set, get) => ({
       }
     }
   },
-  
+
   updateProfile: async (data) => {
     set({ isUpdatingProfile: true });
     try {
@@ -171,17 +174,17 @@ export const useAuthStore = create((set, get) => ({
       console.warn("Cannot connect socket: No authenticated user");
       return;
     }
-    
+
     // Disconnect existing socket if it exists
     get().disconnectSocket();
-  
+
     try {
       const token = localStorage.getItem("token");
       if (!token) {
         console.warn("Cannot connect socket: No token found");
         return;
       }
-      
+
       const socketOptions = {
         query: {
           userId: authUser._id,
@@ -191,25 +194,28 @@ export const useAuthStore = create((set, get) => ({
         reconnectionDelay: 1000,
         transports: ["websocket", "polling"],
       };
-      
+
       // Add token to query if it's not a temp token
-      if (!token.startsWith('temp_')) {
+      if (!token.startsWith("temp_")) {
         socketOptions.query.token = token;
       }
-      
+
       const socket = io(SOCKET_URL, socketOptions);
-    
+
       socket.on("connect", () => {
         console.log("Socket connected successfully");
       });
-  
+
       socket.on("connect_error", (error) => {
         console.error("Socket connection error:", error);
         // If connection fails due to authentication, clear token
         if (error.message?.includes("authentication")) {
-          console.warn("Socket authentication error. Checking token validity...");
-          get().checkTokenExpiration()
-            .then(isValid => {
+          console.warn(
+            "Socket authentication error. Checking token validity..."
+          );
+          get()
+            .checkTokenExpiration()
+            .then((isValid) => {
               if (!isValid) {
                 localStorage.removeItem("token");
                 set({ authUser: null });
@@ -217,7 +223,7 @@ export const useAuthStore = create((set, get) => ({
             });
         }
       });
-  
+
       socket.on("disconnect", (reason) => {
         console.log("Socket disconnected:", reason);
         if (reason === "io server disconnect") {
@@ -225,10 +231,10 @@ export const useAuthStore = create((set, get) => ({
           socket.connect();
         }
       });
-  
+
       socket.connect();
       set({ socket: socket });
-  
+
       socket.on("getOnlineUsers", (userIds) => {
         set({ onlineUsers: userIds });
       });
@@ -236,7 +242,7 @@ export const useAuthStore = create((set, get) => ({
       console.error("Error initializing socket:", err);
     }
   },
-    
+
   disconnectSocket: () => {
     const socket = get().socket;
     if (socket) {
@@ -248,16 +254,16 @@ export const useAuthStore = create((set, get) => ({
   checkTokenExpiration: async () => {
     const token = localStorage.getItem("token");
     if (!token) return false;
-    
+
     try {
       // Try the standard token check endpoint
       await axiosInstance.get("/auth/check-token");
       return true;
     } catch (error) {
       // If standard check fails and we have a temp token, try that approach
-      if (token.startsWith('temp_')) {
-        const userId = token.split('_')[1];
-        
+      if (token.startsWith("temp_")) {
+        const userId = token.split("_")[1];
+
         try {
           // Check if we can still access user data
           const res = await axiosInstance.get(`/users/${userId}`);
@@ -275,6 +281,5 @@ export const useAuthStore = create((set, get) => ({
         return false;
       }
     }
-  }  
-  
+  },
 }));
